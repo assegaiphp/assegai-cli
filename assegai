@@ -1,0 +1,11 @@
+#!/bin/bash
+
+Help () {
+    echo "Help"
+}
+
+case $1 in
+    *)
+    Help
+    ;;
+esac
