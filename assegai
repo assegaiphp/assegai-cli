@@ -1,11 +1,544 @@
 #!/bin/bash
 
+assegai_path=$(which assegai)
+assegai_path=${assegai_path:0:-7}
+working_dir="$(pwd)/"
+
+# Template paths
+config_template="assegai.template"
+config_project_template="assegai.project.template"
+log_dir="/tmp/assegai-"
+controller_template="${assegai_path}templates/Controller.Template.php"
+entity_template="${assegai_path}templates/Entity.Template.php"
+module_template="${assegai_path}templates/Module.Template.php"
+service_template="${assegai_path}templates/Service.Template.php"
+
+version="1.0.0"
+config="${working_dir}assegai.json"
+output="_assegai.json"
+is_numeric="^[0-9]+$"
+is_string="^\"*[0-9a-zA-Z\s]+\"*$"
+
+declare -a schematics=("controller" "entity" "feature" "module" "service")
+declare -a database_commands=("migration" "setup")
+
+# Utility Functions
+ArrayContains () {
+    local seeking=$1; shift
+    local in=1
+    for element; do
+        if [[ $element == "$seeking" ]]; then
+            in=0
+            break
+        fi
+    done
+    return $in
+}
+
+Log () {
+    dir="$log_dir$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')"
+    echo "Logging to $dir"
+}
+
+LogAction () {
+  case $1 in
+    create)
+    prefix="\e[1;32mCREATE\e[0m "
+    ;;
+
+    delete)
+    prefix="\e[1;31mDELETE\e[0m "
+    ;;
+
+    info)
+    prefix="\e[1;33mINFO\e[0m "
+    ;;
+
+    update)
+    prefix="\e[1;34mUPDATE\e[0m "
+    ;;
+
+    *)
+    echo -e "\e[1;31mInvalid log action: $1"
+    return 1
+    ;;
+  esac
+
+  echo -e "${prefix}${2}"
+}
+
+Error () {
+    echo -e "\e[1;31m$1\e[0m"
+    exit
+}
+
+CheckWorkspace () {
+    if test ! -f "$config"; then
+        Error "The $1 command requires to be run in an Assegai project, but a project definition could not be found."
+    fi
+}
+
+GetBytes () {
+    stat --printf="%s" $1
+}
+
+Header () {
+  echo -e "\e[0;31m"
+  echo '                                    _     _____ _      _____ '
+  echo '     /\                            (_)   / ____| |    |_   _|'
+  echo '    /  \   ___ ___  ___  __ _  __ _ _   | |    | |      | |  '
+  echo '   / /\ \ / __/ __|/ _ \/ _` |/ _` | |  | |    | |      | |  '
+  echo '  / ____ \\__ \__ \  __/ (_| | (_| | |  | |____| |____ _| |_ '
+  echo ' /_/    \_\___/___/\___|\__, |\__,_|_|   \_____|______|_____|'
+  echo '                         __/ |                               '
+  echo '                        |___/                                '
+
+  echo -e "\e[0;0m"
+  echo ""
+}
+
+# Command Functions
+Config () {
+    CheckWorkspace "config"
+
+    if test $2; then
+        if [[ $2 =~ $is_numeric ]] ; then
+            cat $config | jq ".$1 = $2" > $output
+        else
+            cat $config | jq ".$1 = \"$2\"" > $output
+        fi
+        mv $output $config
+    elif test $1; then
+        property=$(cat $config | jq ".$1")
+        if [[ $property =~ $is_string ]] ; then
+            echo $property | sed -r 's/["]+//g'
+        else
+            echo $property | jq
+        fi
+    else
+        cat $config | jq
+    fi
+}
+
+Database () {
+  echo -e "\e[1;33mDatabase Commands:\e[0m\n"
+
+  for index in ${!database_commands[@]}; do
+    echo -e "\e[1;34m$index\e[0m: ${database_commands[$index]}"
+  done
+
+  read -p $'\nChoose an option: ' option
+
+  case $option in
+    0)
+    # Migration
+    echo "Migration"
+    ;;
+
+    1)
+    # Setup
+    echo "Setup"
+    ;;
+
+    *)
+    ;;
+  esac
+}
+
+GenerateController() {
+  if test ! $1; then
+    echo -e "\e[1;31mMissing controller name\e[0m"
+    exit
+  fi
+
+  name=$1
+
+  sourceRoot="app/$(Config sourceRoot)"
+  rel_path="${sourceRoot}/Modules/${name}"
+  module_dir_path="${working_dir}${rel_path}"
+
+  # Check if named module exists
+  if test ! -d $module_dir_path; then
+    mkdir $module_dir_path
+
+    if test $verbose = 1; then
+    echo -e "\e[1;32mCREATE\e[0m ${sourceRoot}/Modules/${name} (0 bytes)"
+    fi
+  fi
+
+  filename="${name}Controller.php"
+
+  if test ! -f "${module_dir_path}/${filename}"; then
+    cp $controller_template "${module_dir_path}/${filename}"
+  else
+    echo -e "Nothing to be done."
+    exit
+  fi
+
+  if test -f "${module_dir_path}/${filename}"; then
+    sed -i "s/ModuleName/${name}/g" "${module_dir_path}/${filename}"
+    sed -i "s/ControllerTemplate/${name}Controller/g" "${module_dir_path}/${filename}"
+  fi
+
+  filesize=$(GetBytes "${module_dir_path}/${filename}")
+  LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+}
+
+
+GenerateEntity () {
+  if test ! $1; then
+    echo -e "\e[1;31mMissing entity name\e[0m"
+    exit
+  fi
+
+  name=$1
+  wd=""
+
+  IFS='/' read -ra tokens <<< "$name"
+  for i in "${tokens[@]::${#tokens[@]}-1}"; do
+    if test ! $wd; then
+      wd="$i"
+    else
+      wd="${wd}/${i}"
+    fi
+  done
+  name=${1/*\//}
+
+  sourceRoot="app/$(Config sourceRoot)"
+  rel_path="${sourceRoot}/Modules/${wd}"
+  module_dir_path="${working_dir}${rel_path}"
+
+  # Check if named module exists
+  if test ! -d $module_dir_path; then
+    mkdir $module_dir_path
+
+    if test $verbose = 1; then
+    echo -e "\e[1;32mCREATE\e[0m ${rel_path} (0 bytes)"
+    fi
+  fi
+
+  filename="${name}Entity.php"
+
+  if test ! -f "${module_dir_path}/${filename}"; then
+    cp $entity_template "${module_dir_path}/${filename}"
+  else
+    echo -e "Nothing to be done."
+    exit
+  fi
+
+  if test -f "${module_dir_path}/${filename}"; then
+    sed -i "s/EntityName/${name}/g" "${module_dir_path}/${filename}"
+    sed -i "s/EntityTemplate/${name}Entity/g" "${module_dir_path}/${filename}"
+  fi
+
+  filesize=$(GetBytes "${module_dir_path}/${filename}")
+  filepath="${rel_path}/${filename}"
+  LogAction "create" "${filepath/\/\//\/} (${filesize} bytes)"
+}
+
+GenerateModule () {
+  if test ! $1; then
+    echo -e "\e[1;31mMissing module name\e[0m"
+    exit
+  fi
+
+  name=$1
+
+  sourceRoot="app/$(Config sourceRoot)"
+  rel_path="${sourceRoot}/Modules/${name}"
+  module_dir_path="${working_dir}${rel_path}"
+
+  # Check if named module exists
+  if test ! -d $module_dir_path; then
+    mkdir $module_dir_path
+
+    if test $verbose = 1; then
+    echo -e "\e[1;32mCREATE\e[0m ${sourceRoot}/Modules/${name} (0 bytes)"
+    fi
+  fi
+
+  filename="${name}Module.php"
+
+  if test ! -f "${module_dir_path}/${filename}"; then
+    cp $module_template "${module_dir_path}/${filename}"
+  else
+    echo -e "Nothing to be done."
+    exit
+  fi
+
+  if test -f "${module_dir_path}/${filename}"; then
+    sed -i "s/ModuleName/${name}/g" "${module_dir_path}/${filename}"
+    sed -i "s/ModuleTemplate/${name}Module/g" "${module_dir_path}/${filename}"
+  fi
+
+  filesize=$(GetBytes "${module_dir_path}/${filename}")
+  LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+}
+
+GenerateService() {
+  if test ! $1; then
+    echo -e "\e[1;31mMissing service name\e[0m"
+    exit
+  fi
+
+  name=$1
+
+  sourceRoot="app/$(Config sourceRoot)"
+  rel_path="${sourceRoot}/Modules/${name}"
+  module_dir_path="${working_dir}${rel_path}"
+
+  # Check if named module exists
+  if test ! -d $module_dir_path; then
+    mkdir $module_dir_path
+
+    if test $verbose = 1; then
+    echo -e "\e[1;32mCREATE\e[0m ${sourceRoot}/Modules/${name} (0 bytes)"
+    fi
+  fi
+
+  filename="${name}Service.php"
+
+  if test ! -f "${module_dir_path}/${filename}"; then
+    cp $service_template "${module_dir_path}/${filename}"
+  else
+    echo -e "Nothing to be done."
+    exit
+  fi
+
+  if test -f "${module_dir_path}/${filename}"; then
+    sed -i "s/ServiceName/${name}/g" "${module_dir_path}/${filename}"
+    sed -i "s/ServiceTemplate/${name}Service/g" "${module_dir_path}/${filename}"
+  fi
+
+  filesize=$(GetBytes "${module_dir_path}/${filename}")
+  LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+}
+
+GenerateFeature () {
+  GenerateModule $1
+  GenerateController $1
+  GenerateService $1
+
+  # TODO: Update module by adding controller to controllers 
+  # array & service to providers array
+}
+
+Generate () {
+  CheckWorkspace "generate"
+  src=$(Config "")
+  src_dir="$working_dir/"
+  verbose=0
+
+  if test ! $1; then
+    Help "generate"
+  else
+    case $1 in
+      controller)
+      if test ! $2; then
+          read -p $'\e[1;32m?\e[0m Controller name: \e[1;34m' name
+      else
+          name=$2
+      fi
+      GenerateController $name
+      ;;
+      
+      entity)
+      if test ! $2; then
+          read -p $'\e[1;32m?\e[0m Entity name: \e[1;34m' name
+      else
+          name=$2
+      fi
+      GenerateEntity $name
+      ;;
+
+      feature)
+      if test ! $2; then
+          read -p $'\e[1;32m?\e[0m Feature name: \e[1;34m' name
+      else
+          name=$2
+      fi
+      GenerateFeature $name
+      ;;
+      
+      module)
+      if test ! $2; then
+          read -p $'\e[1;32m?\e[0m Module name: \e[1;34m' name
+      else
+          name=$2
+      fi
+      GenerateModule $name
+      ;;
+
+      service)
+            if test ! $2; then
+          read -p $'\e[1;32m?\e[0m Service name: \e[1;34m' name
+      else
+          name=$2
+      fi
+      GenerateService $name
+      ;;
+      
+      *)
+      Error "An unhandled exception occurred: Schematic \"$1\" not found in collection."
+      # Log error
+      exit
+      ;;
+    esac
+  fi
+  exit
+  # Check if function invoked without arguments
+
+  # if [[]]
+
+  for s in "${schematics[@]}"
+  do
+    echo "$s"
+  done
+
+  read -p $'\e[0;32m?\e[0;0m What name would you like to use for the module? ' name
+  echo "Component name: $name"
+}
+
+Version () {
+  Header
+  echo "Assegai CLI: $version"
+  echo "OS: $OSTYPE"
+
+  echo ""
+  php -v
+
+  echo ""
+}
+
 Help () {
-    echo "Help"
+  case $1 in
+    config)
+      echo "Retrieves or sets Assegai configuration values in the assegai.json file for the workspace."
+      echo "usage: assegai config <jsonPath> <value> [options]"
+
+      echo -e "\narguments:"
+      echo -e "  \e[1;34mjsonPath\e[0m"
+      echo -e "    The configuration key to set or query, in JSON path format. For example: \"a[3].foo.bar[2]\". If no new value is provided, returns the current value of this key."
+      echo -e "  \e[1;34mvalue\e[0m"
+      echo -e "    If provided, a new value for the given configuration key."
+
+      echo -e "\noptions:"
+      echo -e "  \e[1;34m--global\e[0m (-g)"
+      echo -e "    Access the global configuration in the caller's home directory."
+      echo -e "  \e[1;34m--help\e[0m"
+      echo -e "    Shows a help message for this command in the console."
+    ;;
+
+    generate)
+      echo "Generates and/or modifies files based on a schematic."
+      echo "usage: assegai generate <schematic> [options]"
+
+      echo -e "\narguments:\n  \e[1;34mschematic\e[0m"
+      echo -e "    The schematic or collection:schematic to generate."
+
+      echo -e "\noptions:"
+      echo -e "  \e[1;34m--defaults\e[0m"
+      echo -e "    Disable interactive input prompts for options with a default."
+      echo -e "  \e[1;34m--dry-run\e[0m (-d)"
+      echo -e "     Run through and reports activity without writing out results."
+      echo -e "  \e[1;34m--force\e[0m (-f)"
+      echo -e "     Force overwriting of existing files."
+      echo -e "  \e[1;34m--help\e[0m"
+      echo -e "     Shows a help message for this command in the console."
+      echo -e "  \e[1;34m--interactive\e[0m"
+      echo -e "      Enable interactive input prompts."
+
+      echo -e "\nAvailable Schematics:"
+      for s in "${schematics[@]}"
+      do
+        echo -e "  $s"
+      done
+      echo ""
+    ;;
+
+    *)
+      Header
+      echo "Available Commands:"
+      echo -e "  \e[1;34mconfig \e[0;0m\tRetrieves or sets Assegai configuration values in the assegai.json file for the workspace."
+      echo -e "  \e[1;34mdatabase \e[0;0m(d)\tGenerates and/or modifies files based on a schematic."
+      echo -e "  \e[1;34mgenerate \e[0;0m(g)\tGenerates and/or modifies files based on a schematic."
+      echo -e "  \e[1;34minit \e[0;0m\t\tCreate an empty Assegai workspace or reinitialize an existing one"
+      echo -e "  \e[1;34mversion \e[0;0m(v)\tOutputs Assegai CLI version."
+      echo -e "\nFor more detailed help run \"assegai help [command name]\""
+    ;;
+  esac
+}
+
+Init () {
+  if test ! -f $config; then
+    is_new=1
+  else
+    is_new=0
+    # rm $config
+  fi
+
+  cp "${assegai_path}${config_template}" $config
+
+  if test -f $config; then
+    size=$(GetBytes $config)
+    echo -e "\e[1;32mCreate\e[0m $config ($size bytes)\n"
+  fi
+
+  read -p $'\e[1;32m?\e[0m Project name: ' project_name
+  read -p $'\e[1;32m?\e[0m Version [1.0.0]: ' project_version
+  project_version=${project_version:-"1.0.0"}
+  read -p $'\e[1;32m?\e[0m Description: ' project_description
+
+  Config "name" $project_name
+  Config "version" $project_version
+  Config "description" $project_description
+
+  if test $is_new -eq 1; then
+    echo -e "\nInitialized empty Assegai workspace in $working_dir"
+  else
+    echo -e "\nReinitialized existing Assegai workspace in $working_dir"
+  fi
+  exit
+}
+
+Test () {
+  echo -e "Not Implemented"
 }
 
 case $1 in
-    *)
-    Help
-    ;;
+  config)
+    Config "${@:2}"
+  ;;
+
+  database)
+    Database "${@:2}"
+  ;;
+
+  generate)
+    Generate "${@:2}"
+  ;;
+
+  g)
+    Generate "${@:2}"
+  ;;
+
+  init)
+    Init
+  ;;
+
+  test)
+    Test
+  ;;
+
+  version)
+    Version
+  ;;
+
+  v)
+    Version
+  ;;
+
+  *)
+    Help $2
+  ;;
 esac

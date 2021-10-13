@@ -1,0 +1,9 @@
+{
+  "projectName": {
+    "projectType": "application",
+    "root": "",
+    "sourceRoot": "src",
+    "prefix": "app",
+    "schematics": {}
+  }
+}

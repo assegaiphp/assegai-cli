@@ -1,0 +1,9 @@
+{
+  "name": "",
+  "description": "",
+  "version": 1,
+  "projectType": "application",
+  "root": "",
+  "sourceRoot": "src",
+  "prefix": "app"
+}
