@@ -2,8 +2,9 @@
 
 namespace LifeRaft\Modules\EntityName;
 
-use LifeRaft\Core\BaseEntity;
+use LifeRaft\Database\BaseEntity;
 
+#[Injectable]
 class EntityTemplate extends BaseEntity
 {
 }
