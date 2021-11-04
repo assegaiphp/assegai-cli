@@ -85,6 +85,16 @@ GetBytes () {
     stat --printf="%s" $1
 }
 
+UpdateModule() {
+  script="${assegai_path}scripts/update-module.php"
+  php $script ${@}
+}
+
+UpdateRoutes() {
+  script="${assegai_path}scripts/update-routes.php"
+  php $script ${@}
+}
+
 Header () {
   echo -e "\e[0;31m"
   echo '                                    _     _____ _      _____ '
@@ -102,25 +112,25 @@ Header () {
 
 # Command Functions
 Config () {
-    CheckWorkspace "config"
+  CheckWorkspace "config"
 
-    if test $2; then
-        if [[ $2 =~ $is_numeric ]] ; then
-            cat $config | jq ".$1 = $2" > $output
-        else
-            cat $config | jq ".$1 = \"$2\"" > $output
-        fi
-        mv $output $config
-    elif test $1; then
-        property=$(cat $config | jq ".$1")
-        if [[ $property =~ $is_string ]] ; then
-            echo $property | sed -r 's/["]+//g'
-        else
-            echo $property | jq
-        fi
+  if test $2; then
+    if [[ $2 =~ $is_numeric ]] ; then
+      cat $config | jq ".$1 = $2" > $output
     else
-        cat $config | jq
+      cat $config | jq ".$1 = \"$2\"" > $output
     fi
+    mv $output $config
+  elif test $1; then
+    property=$(cat $config | jq ".$1")
+    if [[ $property =~ $is_string ]] ; then
+      echo $property | sed -r 's/["]+//g'
+    else
+      echo $property | jq
+    fi
+  else
+    cat $config | jq
+  fi
 }
 
 DatabaseMigration () {
@@ -237,6 +247,7 @@ GenerateController() {
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+  UpdateModule $name "controllers" "${name}Controller"
 }
 
 
@@ -340,6 +351,8 @@ GenerateModule () {
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+
+  UpdateRoutes $name
 }
 
 GenerateRepository() {
@@ -382,6 +395,7 @@ GenerateRepository() {
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+  UpdateModule $name "providers" "${name}Repository"
 }
 
 GenerateService() {
@@ -421,6 +435,7 @@ GenerateService() {
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+  UpdateModule $name "providers" "${name}Service"
 }
 
 GenerateFeature () {
@@ -428,14 +443,14 @@ GenerateFeature () {
   GenerateController $1
   GenerateService $1
 
-  read -p $'\e[1;32m?\e[0m Generate a repository as well [Y/n]: ' option
+  read -p $'\n\e[1;32m?\e[0m Generate a repository as well [Y/n]: ' option
   option=${option-Y}
 
   if test $option="Y" || $option="y"; then
     GenerateRepository $1
   fi
 
-  read -p $'\e[1;32m?\e[0m Generate an Entity as well [Y/n]: ' option
+  read -p $'\n\e[1;32m?\e[0m Generate an Entity as well [Y/n]: ' option
   option=${option-Y}
 
   if test $option="Y" || $option="y"; then
@@ -687,10 +702,9 @@ NewApplication () {
 }
 
 Test () {
-  # if test -f "run-unittest"; then
-  #   ./run-unittest
-  # fi
-  php -v
+  if test -f "run-unittest"; then
+    ./run-unittest
+  fi
 }
 
 case $1 in
