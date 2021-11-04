@@ -4,15 +4,14 @@ namespace LifeRaft\Modules\RepositoryName;
 
 use LifeRaft\Core\Attributes\Injectable;
 use LifeRaft\Database\Attributes\Repository;
-use LifeRaft\Database\Interfaces\IEntity;
-use LifeRaft\Database\Interfaces\IRepository;
+use LifeRaft\Database\BaseRepository;
 
 #[Repository(
-  entity: TestEntity::class,
+  entity: '',
   tableName: 'TableName'
 )]
 #[Injectable]
-class RepositoryTemplate implements IRepository
+class RepositoryTemplate extends BaseRepository
 {
 }
 
