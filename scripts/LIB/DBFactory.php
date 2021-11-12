@@ -1,6 +1,9 @@
 <?php
 
+namespace Assegai\LIB;
+
 use Exception;
+use PDO;
 
 /**
  * The `DBFactory` class houses static methods for creating **Database 
@@ -33,7 +36,7 @@ final class DBFactory
     try
     {
       extract($config);
-      DBFactory::$connections[$type][$dbName] = new PDO(
+      DBFactory::$connections[$type][$name] = new PDO(
         dsn: "mysql:host=$host;port=$port;dbname=$name",
         username: $user,
         password: $password
@@ -44,7 +47,7 @@ final class DBFactory
       exit($e->getMessage());
     }
 
-    return DBFactory::$connections[$type][$dbName];
+    return DBFactory::$connections[$type][$name];
   }
 
   public static function getMariaDBConnection(array $config): PDO
@@ -54,7 +57,7 @@ final class DBFactory
     try
     {
       extract($config);
-      DBFactory::$connections[$type][$dbName] = new PDO(
+      DBFactory::$connections[$type][$name] = new PDO(
         dsn: "mysql:host=$host;port=$port;dbname=$name",
         username: $user,
         password: $password
@@ -65,7 +68,7 @@ final class DBFactory
       exit($e->getMessage());
     }
 
-    return DBFactory::$connections[$type][$dbName];
+    return DBFactory::$connections[$type][$name];
   }
 
   public static function getPostgreSQLConnection(array $config): PDO
@@ -75,7 +78,7 @@ final class DBFactory
     try
     {
       extract($config);
-      DBFactory::$connections[$type][$dbName] = new PDO(
+      DBFactory::$connections[$type][$name] = new PDO(
         dsn: "pgsql:host=$host;port=$port;dbname=$name",
         username: $user,
         password: $password
@@ -86,7 +89,7 @@ final class DBFactory
       exit($e->getMessage());
     }
 
-    return DBFactory::$connections[$type][$dbName];
+    return DBFactory::$connections[$type][$name];
   }
 
   public static function getSQLiteConnection(array $config): PDO
@@ -96,14 +99,14 @@ final class DBFactory
     try
     {
       extract($config);
-      DBFactory::$connections[$type][$dbName] = new PDO( dsn: "sqlite:$path" );
+      DBFactory::$connections[$type][$name] = new PDO( dsn: "sqlite:$path" );
     }
     catch (Exception $e)
     {
       exit($e->getMessage());
     }
 
-    return DBFactory::$connections[$type][$dbName];
+    return DBFactory::$connections[$type][$name];
   }
 
   public static function getMongoDbConnection(array $config): PDO
@@ -111,9 +114,9 @@ final class DBFactory
     $type = 'mongodb';
     extract($config);
 
-    if (!isset($dbName))
+    if (!isset($name))
     {
-      exit("\e[0;31mMissing dbName\e[0m");
+      exit("\e[0;31mMissing name\e[0m");
     }
 
     try
@@ -125,6 +128,6 @@ final class DBFactory
       exit($e->getMessage());
     }
 
-    return DBFactory::$connections[$type][$dbName];
+    return DBFactory::$connections[$type][$name];
   }
 }
