@@ -7,6 +7,8 @@ use JetBrains\PhpStorm\Pure;
 
 class Menu
 {
+  private ?MenuItem $selected = null;
+
   public function __construct(
     private string $title,
     private array $items = [],
@@ -27,16 +29,25 @@ class Menu
     }
   }
   
+  public function title(): string { return $this->title; }
+
+  public function setTitle(string $title): void { $this->title = $title; }
+  
   public function options(): MenuOptions { return $this->options; }
 
   public function setOptions(MenuOptions $options): void { $this->otpions = $options; }
+
+  public function selected(): ?MenuItem { return $this->selected; }
 
   public function add(MenuItem $item): void
   {
     if (!key_exists($item->index(), $this->items))
     {
       $count = count($this->items) + 1;
-      $item->setIndex(index: $count);
+      if (is_null($item->index()))
+      {
+        $item->setIndex(index: $count);
+      }
       $this->items[$item->index()] = $item;
     }
     else
@@ -94,7 +105,39 @@ class Menu
       $itemsOutput .= $item->display(withDescriptions: $this->options->showDescriptions()) . "\n";
     }
 
-    return "$titleColorCode" . $this->title . "\e[0m\n\n$itemsOutput\n";
+    return "\n$titleColorCode" . $this->title . "\e[0m\n\n$itemsOutput\n";
+  }
+
+  public function prompt(string $message = 'Choose option'): ?MenuItem
+  {
+    echo $this . "$message: ";
+    $attemptsLeft = 4;
+    $isValidChoice = false;
+    $colorCode = $this->getColorCode(color: 'magenta');
+
+    do
+    {
+      $choice = trim(fgets(STDIN));
+      --$attemptsLeft;
+      $isValidChoice = isset($this->items[$choice]);
+
+      if ($isValidChoice)
+      {
+        $this->selected = $this->items[$choice];
+      }
+      else
+      {
+        if ($attemptsLeft <= 0)
+        {
+          $colorCode = $this->getColorCode(color: 'red');
+          exit("${colorCode}0 attempts left. Program terminating...\e[0m");
+        }
+        echo "${colorCode}Invalid choice: $choice. Try again!\n$attemptsLeft attempts left...\e[0m\n";
+      }
+    }
+    while(!$isValidChoice);
+
+    return $this->selected();
   }
 
   private function getColorCode(string $color): string

@@ -8,7 +8,7 @@ class MenuItem
   public function __construct(
     private string $value,
     private string $description = '',
-    private string $index = '',
+    private ?string $index = null,
     // TODO: change Enum in PHP 8.1
     private string $indexColor = 'blue'
   ) { }
@@ -17,7 +17,7 @@ class MenuItem
 
   public function description(): string { return $this->description; }
 
-  public function index(): string { return $this->index; }
+  public function index(): ?string { return $this->index; }
 
   public function setIndex(string $index): void { $this->index = $index; }
 
