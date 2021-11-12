@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\CLI\Menus;
+namespace Assegai\LIB\Menus;
 
 class MenuOptions
 {
