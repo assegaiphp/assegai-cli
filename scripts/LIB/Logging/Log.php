@@ -11,8 +11,9 @@ class Log
 
   public function __construct(protected string $message)
   {
-    
   }
+
+  public function message(): string { return $this->message; }
 
   public function __toString(): string
   {
@@ -23,6 +24,6 @@ class Log
       $message = "[" . DateTime::ATOM . "] ";
     }
 
-    return $message . $this->message;
+    return $message . $this->message();
   }
 }
