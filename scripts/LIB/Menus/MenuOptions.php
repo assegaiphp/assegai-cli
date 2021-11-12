@@ -12,5 +12,5 @@ class MenuOptions
 
   public function showDescriptions(): bool { return $this->showDescriptions; }
 
-  public function titleColor(): bool { return $this->titleColor; }
+  public function titleColor(): string { return $this->titleColor; }
 }

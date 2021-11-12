@@ -81,7 +81,7 @@ class Menu
   #[Pure]
   public function __toString(): string
   {
-    $titleColorCode = $this->getColorCode(color: $this->options->titleColor());
+    $titleColorCode = $this->getColorCode(color: $this->options()->titleColor());
     $itemsOutput = '';
     
     foreach ($this->items as $item)
@@ -95,14 +95,14 @@ class Menu
   private function getColorCode(string $color): string
   {
     return match ($color) {
-      'black'   => "\e[1;30m",
-      'red'     => "\e[1;31m",
-      'green'   => "\e[1;32m",
-      'yellow'  => "\e[1;33m",
-      'magenta' => "\e[1;35m",
-      'cyan'    => "\e[1;36m",
-      'white'   => "\e[1;37m",
-      default   => "\e[1;34m"
+      'black'   => "\e[0;30m",
+      'red'     => "\e[0;31m",
+      'green'   => "\e[0;32m",
+      'yellow'  => "\e[0;33m",
+      'magenta' => "\e[0;35m",
+      'cyan'    => "\e[0;36m",
+      'white'   => "\e[0;37m",
+      default   => "\e[0;34m"
     };
   }
 }
