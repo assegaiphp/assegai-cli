@@ -78,6 +78,11 @@ class Menu
     }
   }
 
+  public function clear(): void
+  {
+    $this->items = [];
+  }
+
   #[Pure]
   public function __toString(): string
   {
