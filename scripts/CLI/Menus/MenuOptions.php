@@ -6,7 +6,7 @@ namespace Assegai\CLI\Menus;
 class MenuOptions
 {
   public function __construct(
-    private bool $showDiscriptions = false,
+    private bool $showDescriptions = false,
     private string $titleColor = 'yellow'
   ) { }
 

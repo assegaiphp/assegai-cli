@@ -10,7 +10,7 @@ class Menu
   public function __construct(
     private string $title,
     private array $items = [],
-    private ?MenuOptions $options
+    private ?MenuOptions $options = null
   )
   {
     if (is_null($this->options))
@@ -89,7 +89,7 @@ class Menu
       $itemsOutput .= $item->display(withDescriptions: $this->options->showDescriptions()) . "\n";
     }
 
-    return "$titleColorCode" . $this->title . "\e[0m\n$itemsOutput\n";
+    return "$titleColorCode" . $this->title . "\e[0m\n\n$itemsOutput\n";
   }
 
   private function getColorCode(string $color): string
