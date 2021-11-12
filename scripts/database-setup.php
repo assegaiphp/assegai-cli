@@ -55,7 +55,7 @@ if (!isset($config['databases']))
   exit("\e[1;31mInvalid config: 'databases' is not defined.\e[0m\n");
 }
 
-$menu = new Menu(title: 'Available Databases Types');
+$menu = new Menu(title: 'Database Types');
 $availableDatabases = array_keys($config['databases']);
 
 foreach ($availableDatabases as $index => $db)
@@ -89,8 +89,18 @@ foreach ($availableDatabases as $index => $db)
 {
   $menu->add(new MenuItem(value: $db));
 }
-
+$menu->add(new MenuItem(value: 'Quit', index: 'x'));
 $choice = $menu->prompt();
+
+if (is_null($choice))
+{
+  exit("\e[1;31mInvalid choice\e[0m\n");
+}
+
+if (isExitRequest(input: $choice->value()))
+{
+  exit(-1);
+}
 
 if(!isset($config['databases'][$selectedDatabaseType][$choice->value()]))
 {
@@ -104,7 +114,7 @@ $connection = DBFactory::getSQLConnection($config, dialect: $selectedDatabaseTyp
 
 # Create an empty migrations directory that we can use to manage our schema
 $migrationsDir = "$workingDirectory/migrations/$selectedDatabaseType/". $choice->value();
-$initialMigrationDir = "$migrationsDir/00000000000000_initial_directory";
+$initialMigrationDir = "$migrationsDir/00000000000000_initial";
 
 echo "\n";
 
