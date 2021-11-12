@@ -21,7 +21,7 @@ function nextLine(string $message = '$'): string
   return $line;
 }
 
-function isExitRequest(string $input): bool
+function isQuitRequest(string $input): bool
 {
   return in_array(strtolower($input), ['x', 'quit', 'exit', 'kill']);
 }
@@ -70,7 +70,7 @@ if (is_null($choice))
   exit("\e[1;31mInvalid choice\e[0m\n");
 }
 
-if (isExitRequest(input: $choice->value()))
+if (isQuitRequest(input: $choice->value()))
 {
   exit(-1);
 }
@@ -97,7 +97,7 @@ if (is_null($choice))
   exit("\e[1;31mInvalid choice\e[0m\n");
 }
 
-if (isExitRequest(input: $choice->value()))
+if (isQuitRequest(input: $choice->value()))
 {
   exit(-1);
 }
