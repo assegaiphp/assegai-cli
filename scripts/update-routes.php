@@ -51,7 +51,7 @@ if ($argc > 1)
   {
     $prefixArray = empty($output)
       ? array_slice($lines, 0, $lastNamespaceIndex + 1)
-      : array_slice($output, 0, $lastNamespaceIndex + 2);
+      : array_slice($output, 0, $lastNamespaceIndex + 1);
     # Add route
     $output = array_merge(
       $prefixArray,

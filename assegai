@@ -16,6 +16,9 @@ repository_template="${assegai_path}templates/Repository.Template.php"
 sql_source_rel="templates/source.sql"
 sql_source="${assegai_path}${sql_source_rel}"
 
+# Scripts path
+scripts_dir="${assegai_path}scripts/"
+
 version="1.0.0"
 config="${working_dir}assegai.json"
 output="_assegai.json"
@@ -23,7 +26,7 @@ is_numeric="^[0-9]+$"
 is_string="^\"*[0-9a-zA-Z\s]+\"*$"
 
 declare -a schematics=("controller" "entity" "feature" "module" "service")
-declare -a database_commands=("migration" "setup")
+declare -a database_commands=("migration" "setup" "schema:sync")
 
 # Utility Functions
 ArrayContains () {
@@ -138,38 +141,43 @@ DatabaseMigration () {
 }
 
 DatabaseSetup () {
-  db_type=$1
-  db_name=$2
+  "${scripts_dir}database-setup.php"
+  # db_type=$1
+  # db_name=$2
 
-  if test -z $db_type; then
-    read -p $'\e[1;32m?\e[0m Database type [mysql]: \e[1;34m' db_type
-    db_type=${db_type:-mysql}
-  fi
+  # if test -z $db_type; then
+  #   read -p $'\e[1;32m?\e[0m Database type [mysql]: \e[1;34m' db_type
+  #   db_type=${db_type:-mysql}
+  # fi
 
-  if test -z $db_name; then
-    read -p $'\e[1;32m?\e[0m Database name: \e[1;34m' db_name
-  fi
-  echo ""
+  # if test -z $db_name; then
+  #   read -p $'\e[1;32m?\e[0m Database name: \e[1;34m' db_name
+  # fi
+  # echo ""
 
-  if test ! -f $sql_source ; then
-    touch $sql_source
-    LogAction "create" $sql_source_rel
-  fi
+  # if test ! -f $sql_source ; then
+  #   touch $sql_source
+  #   LogAction "create" $sql_source_rel
+  # fi
 
-  case $db_type in
-    *)
-    echo "CREATE DATABASE \`$db_name\`;" > $sql_source
-    LogAction "update" $sql_source_rel
+  # case $db_type in
+  #   *)
+  #   echo "CREATE DATABASE \`$db_name\`;" > $sql_source
+  #   LogAction "update" $sql_source_rel
 
-    read -p $'\e[1;32m?\e[0m Database user [admin]: \e[1;34m' db_user
-    db_user=${db_user:-admin}
-    read -s -p $'\e[1;32m?\e[0m Database password: \e[1;34m' db_pass
-    echo "\e[0m"
+  #   read -p $'\e[1;32m?\e[0m Database user [admin]: \e[1;34m' db_user
+  #   db_user=${db_user:-admin}
+  #   read -s -p $'\e[1;32m?\e[0m Database password: \e[1;34m' db_pass
+  #   echo "\e[0m"
 
-    mysql -u $db_user -p$db_pass < $sql_source
-    LogAction "create" "$db_name"
-    ;;
-  esac
+  #   mysql -u $db_user -p$db_pass < $sql_source
+  #   LogAction "create" "$db_name"
+  #   ;;
+  # esac
+}
+
+DatabaseSchema() {
+  echo "Schema"
 }
 
 Database () {
@@ -440,27 +448,28 @@ GenerateService() {
 
 GenerateFeature () {
   GenerateModule $1
+  echo ""
   GenerateController $1
+  echo ""
   GenerateService $1
 
   read -p $'\n\e[1;32m?\e[0m Generate a repository as well [Y/n]: ' option
-  option=${option-Y}
+  option=${option:-Y}
 
-  if test $option="Y" || $option="y"; then
+  if [[ $option == "Y" || $option == "y" ]]; then
+    echo ""
     GenerateRepository $1
   fi
 
   read -p $'\n\e[1;32m?\e[0m Generate an Entity as well [Y/n]: ' option
-  option=${option-Y}
+  option=${option:-Y}
 
-  if test $option="Y" || $option="y"; then
+  if [[ $option == "Y" || $option == "y" ]]; then
     read -p $'\e[1;32m?\e[0m Entity name: \e[1;34m' name
 
+    echo ""
     GenerateEntity "$1/$name" ${1,,}
   fi
-
-  # TODO: Update module by adding controller to controllers 
-  # array & service to providers array
 }
 
 Generate () {
@@ -670,6 +679,7 @@ NewApplicationHelp () {
 }
 
 NewApplication () {
+  git_source="https://github.com/amasiye/assegai-php.git"
   case $1 in
     --help)
     NewApplicationHelp
@@ -695,6 +705,8 @@ NewApplication () {
         fi
         LogAction "create" "${project_name}"
       fi
+
+
 
     fi
     ;;
