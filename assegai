@@ -137,47 +137,11 @@ Config () {
 }
 
 DatabaseMigration () {
-  echo "Migration"
+  "${scripts_dir}database-migration.php" ${@}
 }
 
 DatabaseSetup () {
-  "${scripts_dir}database-setup.php"
-  # db_type=$1
-  # db_name=$2
-
-  # if test -z $db_type; then
-  #   read -p $'\e[1;32m?\e[0m Database type [mysql]: \e[1;34m' db_type
-  #   db_type=${db_type:-mysql}
-  # fi
-
-  # if test -z $db_name; then
-  #   read -p $'\e[1;32m?\e[0m Database name: \e[1;34m' db_name
-  # fi
-  # echo ""
-
-  # if test ! -f $sql_source ; then
-  #   touch $sql_source
-  #   LogAction "create" $sql_source_rel
-  # fi
-
-  # case $db_type in
-  #   *)
-  #   echo "CREATE DATABASE \`$db_name\`;" > $sql_source
-  #   LogAction "update" $sql_source_rel
-
-  #   read -p $'\e[1;32m?\e[0m Database user [admin]: \e[1;34m' db_user
-  #   db_user=${db_user:-admin}
-  #   read -s -p $'\e[1;32m?\e[0m Database password: \e[1;34m' db_pass
-  #   echo "\e[0m"
-
-  #   mysql -u $db_user -p$db_pass < $sql_source
-  #   LogAction "create" "$db_name"
-  #   ;;
-  # esac
-}
-
-DatabaseSchema() {
-  echo "Schema"
+  "${scripts_dir}database-setup.php" ${@}
 }
 
 Database () {
@@ -257,7 +221,6 @@ GenerateController() {
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
   UpdateModule $name "controllers" "${name}Controller"
 }
-
 
 GenerateEntity () {
   if test ! $1; then
@@ -738,6 +701,10 @@ case $1 in
 
   g)
     Generate "${@:2}"
+  ;;
+
+  migration)
+    DatabaseMigration "${@:2}"
   ;;
 
   init)
