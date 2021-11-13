@@ -110,7 +110,8 @@ class Menu
 
   public function prompt(string $message = 'Choose option'): ?MenuItem
   {
-    echo $this . "$message: ";
+    $inputColorCode = $this->getColorCode(color: 'blue');
+    echo $this . "$message: $inputColorCode";
     $attemptsLeft = 4;
     $isValidChoice = false;
     $colorCode = $this->getColorCode(color: 'magenta');
@@ -130,12 +131,13 @@ class Menu
         if ($attemptsLeft <= 0)
         {
           $colorCode = $this->getColorCode(color: 'red');
-          exit("${colorCode}0 attempts left. Program terminating...\e[0m");
+          exit("\n${colorCode}Program terminating...\e[0m\n");
         }
-        echo "${colorCode}Invalid choice: $choice. Try again!\n$attemptsLeft attempts left...\e[0m\n";
+        echo "\n${colorCode}Invalid choice. Try again!\n$attemptsLeft attempts left...\e[0m\n\n$message: $inputColorCode";
       }
     }
     while(!$isValidChoice);
+    echo "\e[0m";
 
     return $this->selected();
   }
