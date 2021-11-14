@@ -7,6 +7,7 @@ use Assegai\LIB\Logging\Logger;
 use Assegai\LIB\Menus\Menu;
 use Assegai\LIB\Menus\MenuItem;
 use PDO;
+use PDOException;
 
 final class DatabaseSelector
 {
@@ -16,16 +17,16 @@ final class DatabaseSelector
 
   private ?PDO $connection = null;
 
-  private string $message = '';
   private array $config = [];
   private array $availableDatabases = [];
-  private ?string $selectedDatabase = null;
   private ?Menu $databaseTypesMenu = null;
   private ?Menu $availableDatabasesMenu = null;
+  private ?bool $databasExists = null;
 
   public function __construct(
     private ?string $databaseType = null,
     private ?string $databaseName = null,
+    private bool $promptToCreate = false
   )
   {
     $this->databaseTypesMenu = new Menu(title: 'Database Types:');
@@ -46,7 +47,7 @@ final class DatabaseSelector
 
     if (!file_exists(self::CONFIG_FILE_PATH))
     {
-      exit("\e[1;31mMissing file: " . self::CONFIG_FILE_PATH . "\e[0m\n");
+      Logger::error("Missing file: " . self::CONFIG_FILE_PATH, terminateAfterLog: true);
     }
 
     $this->config = require(self::CONFIG_FILE_PATH);
@@ -131,7 +132,73 @@ final class DatabaseSelector
     }
 
     $this->config = $this->config['databases'][$this->databaseType()][$this->databaseName()];
+    $this->config['dontExit'] = true;
     $this->connection = DBFactory::getSQLConnection(config: $this->config, dialect: $this->databaseType());
+
+    if (!empty(DBFactory::errors()))
+    {
+      # Search for database doesn't exist error(1049)
+      foreach (DBFactory::errors() as $index => $error)
+      {
+        if ($index === 1049)
+        {
+          printf("Unknown database '%s%s%s'.\n\n", Color::YELLOW, $this->databaseName(), Color::RESET);
+          if ($this->promptToCreate)
+          {
+            $answer = $this->readLine(message: 'Would you like to create it? ', suffix: '[Y/n]', defaultValue: 'y');
+            $answer = match(strtolower($answer)) {
+              'y',
+              'yes',
+              'yep',
+              'yeah'  => 'yes',
+              default => 'no'
+            };
+
+            if ($answer === 'no')
+            {
+              Logger::warn('Database not defined. Terminating program.', terminateAfterLog: true);
+            }
+            else
+            {
+              try
+              {
+                $statement = $this->connection()->query(sprintf("CREATE DATABASE IF NOT EXISTS `%s`", $this->databaseName()));
+
+                if ($statement === false)
+                {
+                  Logger::error(implode("\n", $this->connection()->errorInfo()), terminateAfterLog: true);
+                }
+
+                Logger::logCreate($this->databaseName() . ' database');
+              }
+              catch(PDOException $e)
+              {
+                Logger::error($e->getMessage(), terminateAfterLog: true);
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    unset($this->config['dontExit']);
+  }
+
+  private function readLine(
+    string $message = '',
+    string $suffix = '',
+    ?string $defaultValue = null
+  ): string
+  {
+    printf("%s: %s " . Color::BLUE, $message, $suffix);
+    $line = trim(fgets(STDIN));
+    echo Color::RESET;
+    if (empty($line))
+    {
+      $line = $defaultValue;
+    }
+    return $line;
   }
 
   private function isQuitRequest(string $input): bool
