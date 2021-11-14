@@ -12,7 +12,9 @@ class Menu
   public function __construct(
     private string $title,
     private array $items = [],
-    private ?MenuOptions $options = null
+    private ?MenuOptions $options = null,
+    private ?string $description = null,
+    private ?string $helpTip = null
   )
   {
     if (is_null($this->options))
@@ -38,6 +40,14 @@ class Menu
   public function setOptions(MenuOptions $options): void { $this->otpions = $options; }
 
   public function selected(): ?MenuItem { return $this->selected; }
+
+  public function description(): ?MenuItem { return $this->description; }
+
+  public function setDescription(string $description): void { $this->description = $description; }
+
+  public function helpTip(): ?MenuItem { return $this->helpTip; }
+
+  public function setHelpTip(string $helpTip): void { $this->helpTip = $helpTip; }
 
   public function add(MenuItem $item): void
   {
@@ -140,6 +150,37 @@ class Menu
     echo "\e[0m";
 
     return $this->selected();
+  }
+
+  public function getHelp(): string
+  {
+    $help = "Available options:\n";
+
+    if (!is_null($this->description()))
+    {
+      $help .= sprintf("%s\n\n", $this->description());
+    }
+    else
+    {
+      $help .= "\n";
+    }
+
+    foreach ($this->items as $item)
+    {
+      $help .= sprintf("  %-10s%s\n", $item->value(), $item->description());
+    }
+
+    if (!is_null($this->helpTip()))
+    {
+      $help .= sprintf("\n%s\n", $this->helpTip());
+    }
+
+    return $help . "\n";
+  }
+
+  public function help(): void
+  {
+    echo $this->getHelp();
   }
 
   private function getColorCode(string $color): string
