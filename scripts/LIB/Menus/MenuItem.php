@@ -55,8 +55,13 @@ class MenuItem
     return sprintf("%-2s%s", $output, $this->value);
   }
 
-  public function display(bool $withDescriptions = false): string
+  public function display(?bool $withDescriptions = null): string
   {
+    if (!is_null($this->options()->showDescriptions()))
+    {
+      $withDescriptions = $this->options()->showDescriptions();
+    }
+
     $output =
       $withDescriptions
       ? sprintf("\e[1;34m%-16s\e[0m%s", strval($this), $this->description())
@@ -65,7 +70,7 @@ class MenuItem
     return $output;
   }
 
-  public function print_display(bool $withDescriptions = false): void
+  public function print_display(?bool $withDescriptions = null): void
   {
     echo $this->display(withDescriptions: $withDescriptions);
   }

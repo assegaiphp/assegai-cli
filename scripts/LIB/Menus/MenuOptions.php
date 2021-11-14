@@ -6,12 +6,12 @@ namespace Assegai\LIB\Menus;
 class MenuOptions
 {
   public function __construct(
-    private bool $showDescriptions = false,
+    private ?bool $showDescriptions = null,
     private bool $showIndexes = true,
     private string $titleColor = 'yellow'
   ) { }
 
-  public function showDescriptions(): bool { return $this->showDescriptions; }
+  public function showDescriptions(): ?bool { return $this->showDescriptions; }
 
   public function showIndexes(): bool { return $this->showIndexes; }
 

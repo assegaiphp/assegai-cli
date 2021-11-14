@@ -41,7 +41,7 @@ class Menu
 
   public function selected(): ?MenuItem { return $this->selected; }
 
-  public function description(): ?MenuItem { return $this->description; }
+  public function description(): ?string { return $this->description; }
 
   public function setDescription(string $description): void { $this->description = $description; }
 
@@ -127,6 +127,9 @@ class Menu
   #[Pure]
   public function __toString(): string
   {
+    $description = $this->options()->showDescriptions() 
+      ? $this->description() . "\n\n"
+      : '';
     $titleColorCode = $this->getColorCode(color: $this->options()->titleColor());
     $itemsOutput = '';
     
@@ -144,7 +147,7 @@ class Menu
       $item->options()->setShowIndexes($previousShowIndexes);
     }
 
-    return "\n$titleColorCode" . $this->title . "\e[0m\n\n$itemsOutput\n";
+    return trim("${description}${titleColorCode}" . $this->title . "\e[0m\n$itemsOutput") . "\n";
   }
 
   public function prompt(string $message = 'Choose option'): ?MenuItem
