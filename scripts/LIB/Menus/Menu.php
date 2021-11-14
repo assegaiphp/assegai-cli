@@ -3,6 +3,7 @@
 
 namespace Assegai\LIB\Menus;
 
+use Assegai\LIB\Color;
 use JetBrains\PhpStorm\Pure;
 
 class Menu
@@ -218,14 +219,15 @@ class Menu
   private function getColorCode(string $color): string
   {
     return match ($color) {
-      'black'   => "\e[0;30m",
-      'red'     => "\e[0;31m",
-      'green'   => "\e[0;32m",
-      'yellow'  => "\e[0;33m",
-      'magenta' => "\e[0;35m",
-      'cyan'    => "\e[0;36m",
-      'white'   => "\e[0;37m",
-      default   => "\e[0;34m"
+      'black'   => Color::BLACK,
+      'red'     => Color::RED,
+      'green'   => Color::GREEN,
+      'yellow'  => Color::YELLOW,
+      'blue'    => Color::BLUE,
+      'magenta' => Color::MAGENTA,
+      'cyan'    => Color::CYAN,
+      'white'   => Color::WHITE,
+      default   => Color::RESET
     };
   }
 }
