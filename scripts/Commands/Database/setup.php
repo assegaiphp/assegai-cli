@@ -15,14 +15,12 @@ list($type, $name) = match(count($args)) {
 $databaseSelector = new DatabaseSelector(
   databaseType: $type,
   databaseName: $name,
-  promptToCreate: true
+  promptToCreate: true # If database doesn't exist, create it
 );
 $databaseSelector->run();
 
 $selectedDatabaseType = $databaseSelector->databaseType();
 $selectedDatabaseName = $databaseSelector->databaseName();
-
-# If database doesn't exist, create it
 
 $connection           = $databaseSelector->connection();
 
