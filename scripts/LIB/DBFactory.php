@@ -2,6 +2,7 @@
 
 namespace Assegai\LIB;
 
+use Assegai\LIB\Logging\Logger;
 use Exception;
 use PDO;
 
@@ -11,6 +12,11 @@ use PDO;
  */
 final class DBFactory
 {
+  private static array $errors = [];
+  private static array $options = [
+    'dontExit' => false
+  ];
+
   private static array $connections = [
     'mysql'   => [],
     'mariadb' => [],
@@ -18,6 +24,11 @@ final class DBFactory
     'sqlite'  => [],
     'mongodb' => [],
   ];
+
+  public static function errors(): array
+  {
+    return self::$errors;
+  }
 
   public static function getSQLConnection(array $config, ?string $dialect = 'mysql'): PDO {
     return match ($dialect) {
@@ -33,9 +44,12 @@ final class DBFactory
   public static function getMySQLConnection(array $config): PDO
   {
     $type = 'mysql';
+    $options = array_intersect_key( $config, self::$options);
+    $options = array_merge(self::$options, $options);
+    extract($config);
+
     try
     {
-      extract($config);
       DBFactory::$connections[$type][$name] = new PDO(
         dsn: "mysql:host=$host;port=$port;dbname=$name",
         username: $user,
@@ -44,7 +58,19 @@ final class DBFactory
     }
     catch (Exception $e)
     {
-      exit($e->getMessage());
+      self::$errors[$e->getCode()] = $e->getMessage();
+      if ($options['dontExit'] === false)
+      {
+        exit($e->getMessage());
+      }
+
+      DBFactory::$connections[$type][$name] = match($e->getCode()) {
+        default => new PDO(
+          dsn: "mysql:host=$host;port=$port",
+          username: $user,
+          password: $password
+        )
+      };
     }
 
     return DBFactory::$connections[$type][$name];
@@ -53,10 +79,12 @@ final class DBFactory
   public static function getMariaDBConnection(array $config): PDO
   {
     $type = 'mariadb';
+    $options = array_intersect_key( $config, self::$options);
+    $options = array_merge(self::$options, $options);
+    extract($config);
 
     try
     {
-      extract($config);
       DBFactory::$connections[$type][$name] = new PDO(
         dsn: "mysql:host=$host;port=$port;dbname=$name",
         username: $user,
@@ -65,7 +93,11 @@ final class DBFactory
     }
     catch (Exception $e)
     {
-      exit($e->getMessage());
+      self::$errors[$e->getCode()] = $e->getMessage();
+      if ($options['dontExit'] === false)
+      {
+        exit($e->getMessage());
+      }
     }
 
     return DBFactory::$connections[$type][$name];
@@ -74,10 +106,12 @@ final class DBFactory
   public static function getPostgreSQLConnection(array $config): PDO
   {
     $type = 'pgsql';
+    $options = array_intersect_key( $config, self::$options);
+    $options = array_merge(self::$options, $options);
+    extract($config);
 
     try
     {
-      extract($config);
       DBFactory::$connections[$type][$name] = new PDO(
         dsn: "pgsql:host=$host;port=$port;dbname=$name",
         username: $user,
@@ -86,7 +120,11 @@ final class DBFactory
     }
     catch (Exception $e)
     {
-      exit($e->getMessage());
+      self::$errors[$e->getCode()] = $e->getMessage();
+      if ($options['dontExit'] === false)
+      {
+        exit($e->getMessage());
+      }
     }
 
     return DBFactory::$connections[$type][$name];
@@ -95,15 +133,21 @@ final class DBFactory
   public static function getSQLiteConnection(array $config): PDO
   {
     $type = 'sqlite';
+    $options = array_intersect_key( $config, self::$options);
+    $options = array_merge(self::$options, $options);
+    extract($config);
 
     try
     {
-      extract($config);
       DBFactory::$connections[$type][$name] = new PDO( dsn: "sqlite:$path" );
     }
     catch (Exception $e)
     {
-      exit($e->getMessage());
+      self::$errors[$e->getCode()] = $e->getMessage();
+      if ($options['dontExit'] === false)
+      {
+        exit($e->getMessage());
+      }
     }
 
     return DBFactory::$connections[$type][$name];
@@ -112,11 +156,13 @@ final class DBFactory
   public static function getMongoDbConnection(array $config): PDO
   {
     $type = 'mongodb';
+    $options = array_intersect_key( $config, self::$options);
+    $options = array_merge(self::$options, $options);
     extract($config);
 
     if (!isset($name))
     {
-      exit("\e[0;31mMissing name\e[0m");
+      Logger::error("Missing name", terminateAfterLog: true);
     }
 
     try
@@ -125,7 +171,11 @@ final class DBFactory
     }
     catch (Exception $e)
     {
-      exit($e->getMessage());
+      self::$errors[$e->getCode()] = $e->getMessage();
+      if ($options['dontExit'] === false)
+      {
+        exit($e->getMessage());
+      }
     }
 
     return DBFactory::$connections[$type][$name];
