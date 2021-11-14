@@ -54,8 +54,8 @@ if (!file_exists($initialMigrationDir . '/down.sql'))
 }
 
 $dbName = $config['name'];
-$migrationsTableSchema = "CREATE TABLE IF NOT EXISTS `$dbName`.`__migrations` (
-  `migration` BIGINT(14) NOT NULL ,
+$migrationsTableSchema = "CREATE TABLE IF NOT EXISTS `$dbName`.`__assegai_schema_migrations` (
+  `migration` VARCHAR(14) NOT NULL ,
   `ran_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   PRIMARY KEY (`migration`)) ENGINE = InnoDB";
 
@@ -71,7 +71,7 @@ if (!$statement->execute())
   exit($connection->errorInfo());
 }
 
-Logger::logCreate('__migrations table');
+Logger::logCreate('__assegai_schema_migrations table');
 Logger::log(message: "\nAll done!");
 
 ?>
