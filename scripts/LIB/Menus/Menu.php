@@ -55,13 +55,13 @@ class Menu
     return key_exists(key: $index, array: $this->items);
   }
 
-  public function hasItemWithValue(string $value): bool
+  public function hasItemWithValue(string $valueOrAlias): bool
   {
     $hasItem = false;
 
     foreach ($this->items as $item)
     {
-      if ($item->value() === $value)
+      if ($item->value() === $valueOrAlias || $item->alias() === $valueOrAlias)
       {
         $hasItem = true;
       }
@@ -214,6 +214,28 @@ class Menu
   public function help(): void
   {
     echo $this->getHelp();
+  }
+
+  public function describeItem(string $itemValueOrIndex): void
+  {
+    foreach ($this->items as $index => $item)
+    {
+      if (in_array($itemValueOrIndex, [$index, $item->value(), $item->alias()]))
+      {
+        $commandColor = Color::BLUE;
+        $titleColor   = Color::YELLOW;
+        $colorReset   = Color::RESET;
+
+        printf(
+          "${commandColor}%s${colorReset}\n  %s\n\n${titleColor}Full Description:${colorReset}\n%-2s%s\n",
+          $item->value(),
+          $item->description(),
+          ' ',
+          $item->fullDescription()
+        );
+        break;
+      }
+    }
   }
 
   private function getColorCode(string $color): string

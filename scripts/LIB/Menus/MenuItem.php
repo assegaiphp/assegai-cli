@@ -3,6 +3,8 @@
 
 namespace Assegai\LIB\Menus;
 
+use Assegai\LIB\Color;
+
 class MenuItem
 {
   public function __construct(
@@ -29,20 +31,24 @@ class MenuItem
 
   public function setIndex(string $index): void { $this->index = $index; }
 
+  public function alias(): ?string { return $this->alias; }
+
+  public function fullDescription(): ?string { return $this->fullDescription; }
+
   public function options(): ?MenuOptions { return $this->options; }
 
   public function __toString(): string
   {
     $color = strtolower($this->indexColor);
     $indexColorCode = match($color) {
-      'black'   => "\e[1;30m",
-      'red'     => "\e[1;31m",
-      'green'   => "\e[1;32m",
-      'yellow'  => "\e[1;33m",
-      'magenta' => "\e[1;35m",
-      'cyan'    => "\e[1;36m",
-      'white'   => "\e[1;37m",
-      default   => "\e[1;34m"
+      'black'   => Color::BLACK,
+      'red'     => Color::RED,
+      'green'   => Color::GREEN,
+      'yellow'  => Color::YELLOW,
+      'magenta' => Color::MAGENTA,
+      'cyan'    => Color::CYAN,
+      'white'   => Color::WHITE,
+      default   => Color::BLUE
     };
 
     $output = '';
