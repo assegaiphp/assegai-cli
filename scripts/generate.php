@@ -43,7 +43,7 @@ else
 {
   list($command) = $args;
 
-  if ($commandsMenu->hasItemWithValue(value: strtolower($command)))
+  if ($commandsMenu->hasItemWithValue(valueOrAlias: strtolower($command)))
   {
     $filename = strtolower($command) . '.php';
     require_once "Commands/Generate/$filename";
