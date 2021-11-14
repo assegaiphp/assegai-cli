@@ -49,6 +49,26 @@ class Menu
 
   public function setHelpTip(string $helpTip): void { $this->helpTip = $helpTip; }
 
+  public function hasItem(string $index): bool
+  {
+    return key_exists(key: $index, array: $this->items);
+  }
+
+  public function hasItemWithValue(string $value): bool
+  {
+    $hasItem = false;
+
+    foreach ($this->items as $item)
+    {
+      if ($item->value() === $value)
+      {
+        $hasItem = true;
+      }
+    }
+
+    return $hasItem;
+  }
+
   public function add(MenuItem $item): void
   {
     if (!key_exists($item->index(), $this->items))
@@ -112,7 +132,16 @@ class Menu
     
     foreach ($this->items as $item)
     {
+      $previousShowIndexes = $item->options()->showIndexes();
+
+      if (!$this->options()->showIndexes())
+      {
+        $item->options()->setShowIndexes(false);
+      }
+
       $itemsOutput .= $item->display(withDescriptions: $this->options->showDescriptions()) . "\n";
+
+      $item->options()->setShowIndexes($previousShowIndexes);
     }
 
     return "\n$titleColorCode" . $this->title . "\e[0m\n\n$itemsOutput\n";
