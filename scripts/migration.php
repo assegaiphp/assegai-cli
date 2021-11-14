@@ -12,9 +12,14 @@ require_once 'bootstrap.php';
 $commandsMenu = new Menu(
   title: 'Migration Commands:',
   items: [
-    new MenuItem(value: 'generate', description: 'Drops the database specified in your config if it can, and then runs assegai database setup'),
+    new MenuItem(
+      value: 'generate',
+      alias: 'g',
+      description: 'Creates a new migration.',
+      fullDescription: 'Creates two empty files in the required structure, up.sql and down.sql. Migrations provide a means for evolving the database schema over time. Each migration can be applied (up.sql) or reverted (down.sql). Applying and immediately reverting a migration should leave your database schema unchanged.'
+    ),
     new MenuItem(value: 'list', description: 'Displays all migrations for a given database.'),
-    new MenuItem(value: 'redo', description: 'Runs the down.sql and then the up.sql for the most recent migration.'),
+    new MenuItem(value: 'redo', description: 'Runs down.sql and then up.sql for the most recent migration.'),
     new MenuItem(value: 'revert', description: 'Runs the down.sql for the most recent migration.'),
     new MenuItem(value: 'run', description: 'Runs all pending migrations, as determined by diesel\'s internal schema table.'),
   ],
@@ -32,10 +37,17 @@ $optionsMenu = new Menu(
   )
 );
 
-function help()
+function help(?string $command = null)
 {
   global $commandsMenu, $optionsMenu;
-  printf("%s\n%s\n", $commandsMenu, $optionsMenu);
+  if (is_null($command))
+  {
+    printf("%s\n%s\n", $commandsMenu, $optionsMenu);
+  }
+  else
+  {
+    $commandsMenu->describeItem(itemValueOrIndex: $command);
+  }
 }
 
 if (empty($args))
@@ -46,10 +58,23 @@ else
 {
   list($command) = $args;
 
-  if ($commandsMenu->hasItemWithValue(value: strtolower($command)))
+  $command = match($command) {
+    'g' => 'generate',
+    default => $command
+  };
+  
+  if ($commandsMenu->hasItemWithValue(valueOrAlias: strtolower($command)))
   {
-    $filename = strtolower($command) . '.php';
-    require_once "Commands/Migration/$filename";
+    list($lastArg) = array_slice($args, -1);
+    if ($lastArg === '--help')
+    {
+      $commandsMenu->describeItem(itemValueOrIndex: $command);
+    }
+    else
+    {
+      $filename = strtolower($command) . '.php';
+      require_once "Commands/Migration/$filename";
+    }
   }
   else
   {
