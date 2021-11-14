@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+$args = array_slice($argv, 1);
 $workingDirectory = exec(command: 'pwd');
 $assegaiPath = exec(command: "which assegai");
 
