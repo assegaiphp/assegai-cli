@@ -120,6 +120,16 @@ final class DatabaseSelector
     }
 
     # 3. Establish Database connection
+    if (!isset($this->config['databases'][$this->databaseType()]))
+    {
+      Logger::error('Unknown database type: ' . $this->databaseType(), terminateAfterLog: true);
+    }
+
+    if (!isset($this->config['databases'][$this->databaseType()][$this->databaseName()]))
+    {
+      Logger::error('Unknown database name: ' . $this->databaseName(), terminateAfterLog: true);
+    }
+
     $this->config = $this->config['databases'][$this->databaseType()][$this->databaseName()];
     $this->connection = DBFactory::getSQLConnection(config: $this->config, dialect: $this->databaseType());
   }
