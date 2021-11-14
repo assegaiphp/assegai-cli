@@ -21,7 +21,6 @@ final class DatabaseSelector
   private array $availableDatabases = [];
   private ?Menu $databaseTypesMenu = null;
   private ?Menu $availableDatabasesMenu = null;
-  private ?bool $databasExists = null;
 
   public function __construct(
     private ?string $databaseType = null,
