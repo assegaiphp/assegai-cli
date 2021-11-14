@@ -136,49 +136,12 @@ Config () {
   fi
 }
 
-DatabaseMigration () {
-  "${scripts_dir}database-migration.php" ${@}
-}
-
-DatabaseSetup () {
-  "${scripts_dir}database-setup.php" ${@}
+Migration () {
+  php "${scripts_dir}migration.php" ${@}
 }
 
 Database () {
-  option=$1
-
-  if test -z $option; then
-  echo -e "\e[1;33mDatabase Commands:\e[0m\n"
-
-  for index in ${!database_commands[@]}; do
-    echo -e "\e[1;34m$index\e[0m: ${database_commands[$index]}"
-  done
-
-    read -p $'\nChoose an option: ' option
-  fi
-
-  case $option in
-    # Migration
-    0)
-    DatabaseMigration ${@:2}
-    ;;
-
-    migration)
-    DatabaseMigration ${@:2}
-    ;;
-
-    # Setup
-    1)
-      DatabaseSetup ${@:2}
-    ;;
-
-    setup)
-      DatabaseSetup ${@:2}
-    ;;
-
-    *)
-    ;;
-  esac
+  php "${scripts_dir}database.php" ${@}
 }
 
 GenerateController() {
@@ -704,7 +667,7 @@ case $1 in
   ;;
 
   migration)
-    DatabaseMigration "${@:2}"
+    Migration "${@:2}"
   ;;
 
   init)
