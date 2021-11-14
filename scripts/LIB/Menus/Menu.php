@@ -154,7 +154,7 @@ class Menu
   public function prompt(string $message = 'Choose option'): ?MenuItem
   {
     $inputColorCode = $this->getColorCode(color: 'blue');
-    echo $this . "$message: $inputColorCode";
+    printf("%s\n%s:$inputColorCode ", $this, $message);
     $attemptsLeft = 4;
     $isValidChoice = false;
     $colorCode = $this->getColorCode(color: 'magenta');
