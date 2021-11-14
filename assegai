@@ -13,8 +13,6 @@ entity_template="${assegai_path}templates/Entity.Template.php"
 module_template="${assegai_path}templates/Module.Template.php"
 service_template="${assegai_path}templates/Service.Template.php"
 repository_template="${assegai_path}templates/Repository.Template.php"
-sql_source_rel="templates/source.sql"
-sql_source="${assegai_path}${sql_source_rel}"
 
 # Scripts path
 scripts_dir="${assegai_path}scripts/"
