@@ -10,7 +10,8 @@ class MenuItem
     private string $description = '',
     private ?string $index = null,
     // TODO: change Enum in PHP 8.1
-    private string $indexColor = 'blue'
+    private string $indexColor = 'blue',
+    private ?string $alias = null,
   ) { }
 
   public function value(): string { return $this->value; }
