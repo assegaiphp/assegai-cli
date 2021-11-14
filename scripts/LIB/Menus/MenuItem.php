@@ -12,7 +12,14 @@ class MenuItem
     // TODO: change Enum in PHP 8.1
     private string $indexColor = 'blue',
     private ?string $alias = null,
-  ) { }
+    private ?string $fullDescription = null,
+    private ?MenuOptions $options = null
+  ) {
+    if (is_null($this->options))
+    {
+      $this->options = new MenuOptions();
+    }
+  }
 
   public function value(): string { return $this->value; }
 
@@ -21,6 +28,8 @@ class MenuItem
   public function index(): ?string { return $this->index; }
 
   public function setIndex(string $index): void { $this->index = $index; }
+
+  public function options(): ?MenuOptions { return $this->options; }
 
   public function __toString(): string
   {
@@ -36,17 +45,22 @@ class MenuItem
       default   => "\e[1;34m"
     };
 
-    return "$indexColorCode" . $this->index . "\e[0m) " . $this->value;
+    $output = '';
+
+    if ($this->options()->showIndexes())
+    {
+      $output .= "$indexColorCode" . $this->index . "\e[0m) ";
+    }
+
+    return sprintf("%-2s%s", $output, $this->value);
   }
 
   public function display(bool $withDescriptions = false): string
   {
-    $output = strval($this);
-
-    if ($withDescriptions)
-    {
-      $output .= " " . $this->description();
-    }
+    $output =
+      $withDescriptions
+      ? sprintf("\e[1;34m%-16s\e[0m%s", strval($this), $this->description())
+      : sprintf("\e[1;34m%s\e[0m", strval($this));
 
     return $output;
   }
@@ -54,5 +68,16 @@ class MenuItem
   public function print_display(bool $withDescriptions = false): void
   {
     echo $this->display(withDescriptions: $withDescriptions);
+  }
+
+  public function getHelp(): string
+  {
+    $help = 'Not Implemented';
+    return $help;
+  }
+
+  public function help(): void
+  {
+    echo $this->getHelp();
   }
 }
