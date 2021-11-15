@@ -3,6 +3,7 @@
 
 namespace Assegai\Commands\Migration;
 
+use Assegai\LIB\Color;
 use Assegai\LIB\DatabaseSelector;
 use Assegai\LIB\Logging\Logger;
 use Assegai\LIB\Migration\Migrator;
@@ -33,6 +34,9 @@ if ($migrations === false)
   Logger::error(message: "Nothing to do\n", terminateAfterLog: true);
 }
 
+$titleColor = Color::YELLOW;
+$resetColor = Color::RESET;
+echo "${titleColor}Migrations:${resetColor}\n";
 foreach ($migrations as $migration)
 {
   printf("  %s\n", $migration);

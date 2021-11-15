@@ -3,7 +3,6 @@
 
 namespace Assegai\LIB\Migration;
 
-use Assegai\LIB\Color;
 use Assegai\LIB\Logging\Logger;
 use PDO;
 use PDOException;
@@ -90,7 +89,6 @@ final class Migrator
       $ranMigrations = [];
       foreach ($migrations as $timestamp => $migration)
       {
-        ++$runCount;
         if (is_null($migration->ranOn()))
         {
           # Run the up.sql file
@@ -113,6 +111,13 @@ final class Migrator
           {
             Logger::error(message: implode("\n", $this->connection->errorInfo()), terminateAfterLog: true);
           }
+
+          ++$runCount;
+        }
+
+        if ($mode === self::REVERT_NEXT && $runCount === 1)
+        {
+          break;
         }
       }
 
@@ -128,9 +133,59 @@ final class Migrator
     }
   }
 
-  public function revert(string $mode = self::RUN_ALL): void
+  public function revert(string $mode = self::REVERT_NEXT): void
   {
+    $reversionCount = 0;
+    $migrations = $this->listMigrations();
+    $migrations = array_reverse(array: $migrations, preserve_keys: true);
 
+    try
+    {
+      $revertedMigrations = [];
+      foreach ($migrations as $timestamp => $migration)
+      {
+        if (!is_null($migration->ranOn()))
+        {
+          # Run the up.sql file
+          $downFilename = sprintf("%s/%s/down.sql", $this->migrationDirectory, $migration->name());
+          $contents = file_get_contents($downFilename);
+          $statement = $this->connection->query($contents);
+
+          if ($statement === false)
+          {
+            Logger::error(message: sprintf("Failed to revert %s", $migration->name()), terminateAfterLog: true);
+          }
+
+          $revertedMigrations[$migration->value()] = $migration;
+
+          # Record migration
+          $migrationValue = $migration->value();
+          $recordStatement = "DELETE FROM `__assegai_schema_migrations` WHERE `migration`='$migrationValue'";
+          $recordStatement = $this->connection->query($recordStatement);
+          if ($statement === false)
+          {
+            Logger::error(message: implode("\n", $this->connection->errorInfo()), terminateAfterLog: true);
+          }
+
+          ++$reversionCount;
+        }
+
+        if ($mode === self::REVERT_NEXT && $reversionCount === 1)
+        {
+          break;
+        }
+      }
+
+      if (empty($revertedMigrations))
+      {
+        Logger::log(message: 'Nothing to do', terminateAfterLog: true);
+      }
+      Logger::logUpdate(path: '__assegai_schema_migrations');
+    }
+    catch(PDOException $e)
+    {
+      Logger::error($e->getMessage(), terminateAfterLog: true);
+    }
   }
 
   public function redo(): void
@@ -146,10 +201,6 @@ final class Migrator
       $allMigrations = scandir($this->migrationDirectory);
       $allMigrations = array_splice($allMigrations, 2);
       $alreadyRan = $this->getRanMigrations();
-      $titleColor = Color::YELLOW;
-      $resetColor = Color::RESET;
-
-      echo "\n${titleColor}Migrations:${resetColor}\n";
       
       foreach ($allMigrations as $item)
       {
