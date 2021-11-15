@@ -100,6 +100,7 @@ final class DatabaseSelector
       }
       $this->availableDatabasesMenu->add(new MenuItem(value: 'quit', index: 'x', indexColor: 'red'));
       $choice = $this->availableDatabasesMenu->prompt();
+      echo "\n";
   
       if (is_null($choice))
       {
