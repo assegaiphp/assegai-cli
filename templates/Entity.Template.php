@@ -1,9 +1,9 @@
 <?php
 
-namespace LifeRaft\Modules\EntityName;
+namespace Assegai\Modules\EntityName;
 
-use LifeRaft\Database\Attributes\Entity;
-use LifeRaft\Database\BaseEntity;
+use Assegai\Database\Attributes\Entity;
+use Assegai\Database\BaseEntity;
 
 #[Entity(tableName: TableName)]
 class EntityTemplate extends BaseEntity

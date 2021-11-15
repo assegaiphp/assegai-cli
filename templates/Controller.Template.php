@@ -1,16 +1,16 @@
 <?php
 
-namespace LifeRaft\Modules\ModuleName;
+namespace Assegai\Modules\ModuleName;
 
-use LifeRaft\Core\Attributes\Controller;
-use LifeRaft\Core\Attributes\Delete;
-use LifeRaft\Core\BaseController;
-use LifeRaft\Core\Responses\Response;
-use LifeRaft\Core\Attributes\Get;
-use LifeRaft\Core\Attributes\Patch;
-use LifeRaft\Core\Attributes\Post;
-use LifeRaft\Core\Attributes\Put;
-use LifeRaft\Database\Interfaces\IEntity;
+use Assegai\Core\Attributes\Controller;
+use Assegai\Core\Attributes\Delete;
+use Assegai\Core\BaseController;
+use Assegai\Core\Responses\Response;
+use Assegai\Core\Attributes\Get;
+use Assegai\Core\Attributes\Patch;
+use Assegai\Core\Attributes\Post;
+use Assegai\Core\Attributes\Put;
+use Assegai\Database\Interfaces\IEntity;
 use stdClass;
 
 #[Controller(path: 'PathName')]

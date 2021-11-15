@@ -4,7 +4,7 @@ if ($argc > 1)
 {
   $routesFilePath = 'app/routes.php';
   $moduleName = $argv[1];
-  $namespace = "use LifeRaft\\Modules\\${moduleName}\\${moduleName}Module;";
+  $namespace = "use Assegai\\Modules\\${moduleName}\\${moduleName}Module;";
   $path = strtolower($moduleName);
   $class = "${moduleName}Module::class";
   $route = "  '$path' => ${class},";

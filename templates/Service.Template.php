@@ -1,10 +1,10 @@
 <?php
 
-namespace LifeRaft\Modules\ServiceName;
+namespace Assegai\Modules\ServiceName;
 
-use LifeRaft\Core\Attributes\Injectable;
-use LifeRaft\Core\Result;
-use LifeRaft\Core\BaseService;
+use Assegai\Core\Attributes\Injectable;
+use Assegai\Core\Result;
+use Assegai\Core\BaseService;
 
 #[Injectable]
 class ServiceTemplate extends BaseService
