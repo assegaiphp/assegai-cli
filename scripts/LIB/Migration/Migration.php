@@ -12,6 +12,11 @@ final class Migration
     private ?string $ranOn = null,
   ) { }
 
+  public function name(): string
+  {
+    return $this->name;
+  }
+
   public function value(): int
   {
     return intval(substr($this->name, 0, 14));
