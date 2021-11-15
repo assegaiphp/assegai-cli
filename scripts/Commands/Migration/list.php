@@ -7,7 +7,7 @@ use Assegai\LIB\DatabaseSelector;
 use Assegai\LIB\Logging\Logger;
 use Assegai\LIB\Migration\Migrator;
 
-list($type, $name) = match(count($args)) {
+list($type, $name) = match (count($args)) {
   1       => [null, null],
   2       => [$args[1], null],
   default => array_slice($args, 1)
