@@ -12,6 +12,7 @@ $commandsMenu = new Menu(
   items: [
     new MenuItem(value: 'reset', description: 'Drops the database specified in your config if it can, and then runs assegai database setup'),
     new MenuItem(value: 'setup', description: 'Creates and/or initializes a database.'),
+    new MenuItem(value: 'sync', description: 'Sync the database with module entity schemas.'),
   ],
   description: 'Usage: assegai database [command] [options]',
   options: new MenuOptions(showDescriptions: true, showIndexes: false)
