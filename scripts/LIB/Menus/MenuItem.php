@@ -58,7 +58,9 @@ class MenuItem
       $output .= "$indexColorCode" . $this->index . "\e[0m) ";
     }
 
-    return sprintf("%-2s%s", $output, $this->value);
+    $alias = is_null($this->alias()) ? '' : ' (' . $this->alias() . ')';
+
+    return sprintf("%-2s%s%s", $output, $this->value, $alias);
   }
 
   public function display(?bool $withDescriptions = null): string
@@ -70,7 +72,7 @@ class MenuItem
 
     $output =
       $withDescriptions
-      ? sprintf("\e[1;34m%-16s\e[0m%s", strval($this), $this->description())
+      ? sprintf("\e[1;34m%-18s\e[0m%s", strval($this), $this->description())
       : sprintf("\e[1;34m%s\e[0m", strval($this));
 
     return $output;
