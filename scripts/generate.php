@@ -7,24 +7,27 @@ use Assegai\LIB\Menus\MenuOptions;
 
 require_once 'bootstrap.php';
 
+checkWorkspace(commandName: 'generate');
+
 $commandsMenu = new Menu(
-  title: 'Generate Commands:',
+  title: 'Available schematics:',
   items: [
-    new MenuItem(value: 'application', description: ''),
-    new MenuItem(value: 'controller', description: ''),
-    new MenuItem(value: 'class', description: ''),
-    new MenuItem(value: 'service', description: ''),
-    new MenuItem(value: 'entity', description: ''),
-    new MenuItem(value: 'module', description: ''),
-    new MenuItem(value: 'feature', description: ''),
+    new MenuItem(value: 'application', description: 'Generate a new application workspace.'),
+    new MenuItem(value: 'class', alias: 'cl', description: 'Generate a new class.'),
+    new MenuItem(value: 'controller', alias: 'co', description: 'Generate a controller declaration.'),
+    new MenuItem(value: 'entity', alias: 'e', description: 'Generate an entity declaration.'),
+    new MenuItem(value: 'feature', alias: 'f', description: 'Generate a new CRUD resource.'),
+    new MenuItem(value: 'guard', alias: 'gu', description: 'Generate a guard declaration.'),
+    new MenuItem(value: 'module', alias: 'mo', description: 'Generate a module declaration.'),
+    new MenuItem(value: 'service', alias: 's', description: 'Generate a service declaration.'),
   ],
-  description: 'Usage: assegai database [command] [options]',
+  description: 'Usage: assegai generate <schematic> [options]',
   options: new MenuOptions(showDescriptions: true, showIndexes: false)
 );
 $optionsMenu = new Menu(
   title: 'Available Options:',
   items: [
-    new MenuItem(value: '--help', description: 'Shows helpful information about a command.')
+    new MenuItem(value: '--help', description: 'Output usage information.')
   ],
   options: new MenuOptions(showDescriptions: true, showIndexes: false)
 );
@@ -43,10 +46,29 @@ else
 {
   list($command) = $args;
 
+  $command = match ($command) {
+    'co'  => 'controller',
+    'cl'  => 'class',
+    'e'   => 'entity',
+    'f'   => 'feature',
+    'gu'  => 'guard',
+    'mo'  => 'module',
+    's'   => 'service',
+    default => $command
+  };
+  
   if ($commandsMenu->hasItemWithValue(valueOrAlias: strtolower($command)))
   {
-    $filename = strtolower($command) . '.php';
-    require_once "Commands/Generate/$filename";
+    list($lastArg) = array_slice($args, -1);
+    if ($lastArg === '--help')
+    {
+      $commandsMenu->describeItem(itemValueOrIndex: $command);
+    }
+    else
+    {
+      $filename = strtolower($command) . '.php';
+      require_once "Commands/Generate/$filename";
+    }
   }
   else
   {
