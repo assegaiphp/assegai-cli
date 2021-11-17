@@ -20,12 +20,17 @@ Next, you are ready to create your first Assegai project. Launch Windows Termina
 `$ composer install -g @assegai/cli`
 
 ## Usage
+
 Learn more in the [official documentaion](https://docs.assegai.ml/cli/overview).
 
 ## Stay in touch
-- Website - [https://assegai.ml](https://assegai.ml/)
-- Twitter - @assegaiframework
+
+* Author - [Andrew Masiye](https://twitter.com/feenix11)
+* Website - [https://atatusoft.com](https://atatusoft.com/)
+* Twitter - [@assegaiphp](https://twitter.com/assegaiphp)
+
 ## License
+
 Assegai is [MIT Licensed](#LICENSE)
 
 [schematics]: https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/schematics
