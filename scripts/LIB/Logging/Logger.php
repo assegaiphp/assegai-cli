@@ -59,7 +59,7 @@ final class Logger
     $colorCode = match($action) {
       Logger::FILE_CREATE => Color::GREEN,
       Logger::FILE_DELETE => Color::RED,
-      Logger::FILE_UPDATE => Color::BLUE,
+      Logger::FILE_UPDATE => Color::LIGHT_BLUE,
       default             => Color::YELLOW
     };
 

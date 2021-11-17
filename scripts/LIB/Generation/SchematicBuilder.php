@@ -98,10 +98,10 @@ final class SchematicBuilder
   {
     $this->buildModule(name: $name);
     
-    usleep(100000);
+    usleep(300000);
     $this->buildController(name: $name);
     
-    usleep(100000);
+    usleep(300000);
     $this->buildService(name: $name);
     
     $choice = prompt(message: 'Would you like to generate a repository', defaultValue: 'Y');
@@ -191,6 +191,72 @@ final class SchematicBuilder
 
   public function buildRepository(?string $name): void
   {
+    if (empty($name))
+    {
+      $name = prompt('Repository name', attempts: 3);
+    }
+
+    $templatePath = $this->templateDirectory() . "/Repository.Template.php";
+    $modulesDirectory = $this->modulesDirectory();
+    $featureDirectory = "$modulesDirectory/$name";
+    $featureDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $featureDirectory);
+    $targetFile = "$featureDirectory/${name}Repository.php";
+    $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
+
+    if (!file_exists($templatePath))
+    {
+      Logger::error("Missing schematic template.");
+    }
+
+    if (!file_exists($modulesDirectory))
+    {
+      if (!mkdir($modulesDirectory))
+      {
+        Logger::error("Could not create modules directory.", terminateAfterLog: true);
+      }
+
+      if ($this->verbose)
+      {
+        Logger::logCreate('app/src/Modules');
+      }
+    }
+
+    if (!file_exists($featureDirectory))
+    {
+      if (!mkdir($featureDirectory))
+      {
+        Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
+      }
+
+      if ($this->verbose)
+      {
+        Logger::logCreate($featureDirectoryRelative);
+      }
+    }
+
+    if (file_exists($targetFile))
+    {
+      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+    }
+    $content = file_get_contents($templatePath);
+    $content = str_replace('ModuleName', $name, $content);
+    $content = str_replace('TableName', strtolower($name), $content);
+
+    $filesize = file_put_contents(filename: $targetFile, data: $content);
+
+    if ($filesize === false)
+    {
+      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+    }
+
+    Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
+
+    $modulePath = $featureDirectory . "/${name}Module.php";
+
+    if (file_exists($modulePath))
+    {
+      WorkspaceManager::updateModule(moduleName: $name, targetArray: 'controllers', newEntry: "${name}Controller");
+    }
   }
 
   public function buildService(?string $name): void

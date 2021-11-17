@@ -19,6 +19,7 @@ $commandsMenu = new Menu(
     new MenuItem(value: 'feature', alias: 'f', description: 'Generate a new CRUD resource.'),
     new MenuItem(value: 'guard', alias: 'gu', description: 'Generate a guard declaration.'),
     new MenuItem(value: 'module', alias: 'mo', description: 'Generate a module declaration.'),
+    new MenuItem(value: 'repository', alias: 'r', description: 'Generate a repository declaration.'),
     new MenuItem(value: 'service', alias: 's', description: 'Generate a service declaration.'),
   ],
   description: 'Usage: assegai generate <schematic> [options]',
@@ -53,6 +54,7 @@ else
     'f'   => 'feature',
     'gu'  => 'guard',
     'mo'  => 'module',
+    'r'   => 'repository',
     's'   => 'service',
     default => $command
   };
