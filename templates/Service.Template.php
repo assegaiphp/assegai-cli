@@ -1,41 +1,11 @@
 <?php
 
-namespace LifeRaft\Modules\ServiceName;
+namespace Assegai\Modules\ModuleName;
 
-use LifeRaft\Core\Attributes\Injectable;
-use LifeRaft\Core\Result;
-use LifeRaft\Core\BaseService;
+use Assegai\Core\Attributes\Injectable;
+use Assegai\Core\BaseCrudService;
 
 #[Injectable]
-class ServiceTemplate extends BaseService
+class ModuleNameService extends BaseCrudService
 {
-  public function findAll(): Result
-  {
-    return new Result();
-  }
-
-  public function find(int $id): Result
-  {
-    return new Result();
-  }
-
-  public function create(mixed $entity): Result
-  {
-    return new Result();
-  }
-
-  public function update(): Result
-  {
-    return new Result();
-  }
-
-  public function patch(): Result
-  {
-    return new Result();
-  }
-
-  public function delete(): Result
-  {
-    return new Result();
-  }
 }

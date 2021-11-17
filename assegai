@@ -12,6 +12,10 @@ controller_template="${assegai_path}templates/Controller.Template.php"
 entity_template="${assegai_path}templates/Entity.Template.php"
 module_template="${assegai_path}templates/Module.Template.php"
 service_template="${assegai_path}templates/Service.Template.php"
+repository_template="${assegai_path}templates/Repository.Template.php"
+
+# Scripts path
+scripts_dir="${assegai_path}scripts/"
 
 version="1.0.0"
 config="${working_dir}assegai.json"
@@ -20,7 +24,7 @@ is_numeric="^[0-9]+$"
 is_string="^\"*[0-9a-zA-Z\s]+\"*$"
 
 declare -a schematics=("controller" "entity" "feature" "module" "service")
-declare -a database_commands=("migration" "setup")
+declare -a database_commands=("migration" "setup" "schema:sync")
 
 # Utility Functions
 ArrayContains () {
@@ -82,6 +86,16 @@ GetBytes () {
     stat --printf="%s" $1
 }
 
+UpdateModule() {
+  script="${assegai_path}scripts/update-module.php"
+  php $script ${@}
+}
+
+UpdateRoutes() {
+  script="${assegai_path}scripts/update-routes.php"
+  php $script ${@}
+}
+
 Header () {
   echo -e "\e[0;31m"
   echo '                                    _     _____ _      _____ '
@@ -99,50 +113,33 @@ Header () {
 
 # Command Functions
 Config () {
-    CheckWorkspace "config"
+  CheckWorkspace "config"
 
-    if test $2; then
-        if [[ $2 =~ $is_numeric ]] ; then
-            cat $config | jq ".$1 = $2" > $output
-        else
-            cat $config | jq ".$1 = \"$2\"" > $output
-        fi
-        mv $output $config
-    elif test $1; then
-        property=$(cat $config | jq ".$1")
-        if [[ $property =~ $is_string ]] ; then
-            echo $property | sed -r 's/["]+//g'
-        else
-            echo $property | jq
-        fi
+  if test $2; then
+    if [[ $2 =~ $is_numeric ]] ; then
+      cat $config | jq ".$1 = $2" > $output
     else
-        cat $config | jq
+      cat $config | jq ".$1 = \"$2\"" > $output
     fi
+    mv $output $config
+  elif test $1; then
+    property=$(cat $config | jq ".$1")
+    if [[ $property =~ $is_string ]] ; then
+      echo $property | sed -r 's/["]+//g'
+    else
+      echo $property | jq
+    fi
+  else
+    cat $config | jq
+  fi
+}
+
+Migration () {
+  php "${scripts_dir}migration.php" ${@}
 }
 
 Database () {
-  echo -e "\e[1;33mDatabase Commands:\e[0m\n"
-
-  for index in ${!database_commands[@]}; do
-    echo -e "\e[1;34m$index\e[0m: ${database_commands[$index]}"
-  done
-
-  read -p $'\nChoose an option: ' option
-
-  case $option in
-    0)
-    # Migration
-    echo "Migration"
-    ;;
-
-    1)
-    # Setup
-    echo "Setup"
-    ;;
-
-    *)
-    ;;
-  esac
+  php "${scripts_dir}database.php" ${@}
 }
 
 GenerateController() {
@@ -153,8 +150,8 @@ GenerateController() {
 
   name=$1
 
-  sourceRoot="app/$(Config sourceRoot)"
-  rel_path="${sourceRoot}/Modules/${name}"
+  source_root="app/$(Config sourceRoot)"
+  rel_path="${source_root}/Modules/${name}"
   module_dir_path="${working_dir}${rel_path}"
 
   # Check if named module exists
@@ -162,7 +159,7 @@ GenerateController() {
     mkdir $module_dir_path
 
     if test $verbose = 1; then
-    echo -e "\e[1;32mCREATE\e[0m ${sourceRoot}/Modules/${name} (0 bytes)"
+    echo -e "\e[1;32mCREATE\e[0m ${source_root}/Modules/${name} (0 bytes)"
     fi
   fi
 
@@ -178,12 +175,13 @@ GenerateController() {
   if test -f "${module_dir_path}/${filename}"; then
     sed -i "s/ModuleName/${name}/g" "${module_dir_path}/${filename}"
     sed -i "s/ControllerTemplate/${name}Controller/g" "${module_dir_path}/${filename}"
+    sed -i "s/PathName/${name,,}/g" "${module_dir_path}/${filename}"
   fi
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+  UpdateModule $name "controllers" "${name}Controller"
 }
-
 
 GenerateEntity () {
   if test ! $1; then
@@ -204,8 +202,8 @@ GenerateEntity () {
   done
   name=${1/*\//}
 
-  sourceRoot="app/$(Config sourceRoot)"
-  rel_path="${sourceRoot}/Modules/${wd}"
+  source_root="app/$(Config sourceRoot)"
+  rel_path="${source_root}/Modules/${wd}"
   module_dir_path="${working_dir}${rel_path}"
 
   # Check if named module exists
@@ -227,8 +225,20 @@ GenerateEntity () {
   fi
 
   if test -f "${module_dir_path}/${filename}"; then
-    sed -i "s/EntityName/${name}/g" "${module_dir_path}/${filename}"
+    sed -i "s/EntityName/${wd/\//\\}/g" "${module_dir_path}/${filename}"
     sed -i "s/EntityTemplate/${name}Entity/g" "${module_dir_path}/${filename}"
+    
+    if test ! $2; then
+      read -p $'' tableName
+    else
+      tableName=$2
+    fi
+
+    if test -z $tableName; then
+      sed -i "s/TableName/null/g" "${module_dir_path}/${filename}"
+    else
+      sed -i "s/TableName/'$tableName'/g" "${module_dir_path}/${filename}"
+    fi
   fi
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
@@ -244,8 +254,8 @@ GenerateModule () {
 
   name=$1
 
-  sourceRoot="app/$(Config sourceRoot)"
-  rel_path="${sourceRoot}/Modules/${name}"
+  source_root="app/$(Config sourceRoot)"
+  rel_path="${source_root}/Modules/${name}"
   module_dir_path="${working_dir}${rel_path}"
 
   # Check if named module exists
@@ -253,7 +263,7 @@ GenerateModule () {
     mkdir $module_dir_path
 
     if test $verbose = 1; then
-    echo -e "\e[1;32mCREATE\e[0m ${sourceRoot}/Modules/${name} (0 bytes)"
+    echo -e "\e[1;32mCREATE\e[0m ${source_root}/Modules/${name} (0 bytes)"
     fi
   fi
 
@@ -273,6 +283,51 @@ GenerateModule () {
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+
+  UpdateRoutes $name
+}
+
+GenerateRepository() {
+  if test ! $1; then
+    echo -e "\e[1;31mMissing repository name\e[0m"
+    exit
+  fi
+
+  name=$1
+
+  source_root="app/$(Config sourceRoot)"
+  rel_path="${source_root}/Modules/${name}"
+  module_dir_path="${working_dir}${rel_path}"
+
+  # Check if named module exists
+  if test ! -d $module_dir_path; then
+    mkdir $module_dir_path
+
+    if test $verbose = 1; then
+    echo -e "\e[1;32mCREATE\e[0m ${source_root}/Modules/${name} (0 bytes)"
+    fi
+  fi
+
+  filename="${name}Repository.php"
+
+  if test ! -f "${module_dir_path}/${filename}"; then
+    cp $repository_template "${module_dir_path}/${filename}"
+  else
+    echo -e "Nothing to be done."
+    exit
+  fi
+
+  if test -f "${module_dir_path}/${filename}"; then
+    sed -i "s/RepositoryName/${name}/g" "${module_dir_path}/${filename}"
+    sed -i "s/RepositoryTemplate/${name}Repository/g" "${module_dir_path}/${filename}"
+    sed -i "s/TableName/${name,,}/g" "${module_dir_path}/${filename}"
+  else
+    exit
+  fi
+
+  filesize=$(GetBytes "${module_dir_path}/${filename}")
+  LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+  UpdateModule $name "providers" "${name}Repository"
 }
 
 GenerateService() {
@@ -283,8 +338,8 @@ GenerateService() {
 
   name=$1
 
-  sourceRoot="app/$(Config sourceRoot)"
-  rel_path="${sourceRoot}/Modules/${name}"
+  source_root="app/$(Config sourceRoot)"
+  rel_path="${source_root}/Modules/${name}"
   module_dir_path="${working_dir}${rel_path}"
 
   # Check if named module exists
@@ -292,7 +347,7 @@ GenerateService() {
     mkdir $module_dir_path
 
     if test $verbose = 1; then
-    echo -e "\e[1;32mCREATE\e[0m ${sourceRoot}/Modules/${name} (0 bytes)"
+    echo -e "\e[1;32mCREATE\e[0m ${source_root}/Modules/${name} (0 bytes)"
     fi
   fi
 
@@ -312,15 +367,33 @@ GenerateService() {
 
   filesize=$(GetBytes "${module_dir_path}/${filename}")
   LogAction "create" "${rel_path}/${filename} (${filesize} bytes)"
+  UpdateModule $name "providers" "${name}Service"
 }
 
 GenerateFeature () {
   GenerateModule $1
+  echo ""
   GenerateController $1
+  echo ""
   GenerateService $1
 
-  # TODO: Update module by adding controller to controllers 
-  # array & service to providers array
+  read -p $'\n\e[1;32m?\e[0m Generate a repository as well [Y/n]: ' option
+  option=${option:-Y}
+
+  if [[ $option == "Y" || $option == "y" ]]; then
+    echo ""
+    GenerateRepository $1
+  fi
+
+  read -p $'\n\e[1;32m?\e[0m Generate an Entity as well [Y/n]: ' option
+  option=${option:-Y}
+
+  if [[ $option == "Y" || $option == "y" ]]; then
+    read -p $'\e[1;32m?\e[0m Entity name: \e[1;34m' name
+
+    echo ""
+    GenerateEntity "$1/$name" ${1,,}
+  fi
 }
 
 Generate () {
@@ -367,6 +440,15 @@ Generate () {
           name=$2
       fi
       GenerateModule $name
+      ;;
+
+      repository)
+            if test ! $2; then
+          read -p $'\e[1;32m?\e[0m Repository name: \e[1;34m' name
+      else
+          name=$2
+      fi
+      GenerateRepository $name
       ;;
 
       service)
@@ -463,6 +545,7 @@ Help () {
       echo -e "  \e[1;34mdatabase \e[0;0m(d)\tGenerates and/or modifies files based on a schematic."
       echo -e "  \e[1;34mgenerate \e[0;0m(g)\tGenerates and/or modifies files based on a schematic."
       echo -e "  \e[1;34minit \e[0;0m\t\tCreate an empty Assegai workspace or reinitialize an existing one"
+      echo -e "  \e[1;34mnew \e[0;0m\t\tGenerate Assegai application."
       echo -e "  \e[1;34mversion \e[0;0m(v)\tOutputs Assegai CLI version."
       echo -e "\nFor more detailed help run \"assegai help [command name]\""
     ;;
@@ -501,8 +584,63 @@ Init () {
   exit
 }
 
+NewApplicationHelp () {
+  declare -A available_options=(["-d"]="--directory" ["-h"]="--help")
+  declare -A descriptions=(["--directory"]="Specify the destination directory." ["--help"]="Output usage information.")
+  echo -e "Usage: assegai new|n [options] [name]"
+  echo -e "\nGenerate Nest application"
+  echo -e "\nOptions:"
+  for alias in "${!available_options[@]}"
+  do
+    option_name=${available_options[$alias]}
+    if test $alias = "-d"; then
+      echo -e "  ${option_name} [directory]\t\t\t${descriptions[$option_name]}"
+    else
+      echo -e "  ${alias}, ${available_options[$alias]}\t\t\t\t\t${descriptions[$option_name]}"
+    fi
+  done
+  exit
+}
+
+NewApplication () {
+  git_source="https://github.com/amasiye/assegai-php.git"
+  case $1 in
+    --help)
+    NewApplicationHelp
+    ;;
+
+    -h)
+    NewApplicationHelp
+    ;;
+
+    *)
+    if test -z $1; then
+      NewApplicationHelp
+    else
+      project_name=$1
+      echo -e "⚡  We will scaffold your app in a few seconds..."
+
+      if test ! -d $project_name; then
+        mkdir $project_name
+        
+        if test ! -d $project_name; then
+          echo -e "\e[1;31mCouldn't not create project directory: ${project_name}\e[0m"
+          exit
+        fi
+        LogAction "create" "${project_name}"
+      fi
+
+
+
+    fi
+    ;;
+  esac
+}
+
 Test () {
-  echo -e "Not Implemented"
+  if test -f "run-unittest"; then
+    ./run-unittest
+  fi
 }
 
 case $1 in
@@ -514,6 +652,10 @@ case $1 in
     Database "${@:2}"
   ;;
 
+  d)
+    Database "${@:2}"
+  ;;
+
   generate)
     Generate "${@:2}"
   ;;
@@ -522,8 +664,20 @@ case $1 in
     Generate "${@:2}"
   ;;
 
+  migration)
+    Migration "${@:2}"
+  ;;
+
   init)
     Init
+  ;;
+
+  n)
+    NewApplication "${@:2}"
+  ;;
+
+  new)
+    NewApplication "${@:2}"
   ;;
 
   test)
