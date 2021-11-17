@@ -89,8 +89,12 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   return $line;
 }
 
-function bytes_format(int $bytes): string
+function bytes_format(?int $bytes): string
 {
+  if (is_null($bytes))
+  {
+    $bytes = 0;
+  }
   return match (true) {
     $bytes < 1024 => "$bytes bytes",
     $bytes < 1048576 => number_format($bytes / 1024, 2) . " MB",
