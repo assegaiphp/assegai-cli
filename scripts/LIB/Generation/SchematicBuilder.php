@@ -12,6 +12,14 @@ final class SchematicBuilder
     private bool $verbose = false
   ) { }
 
+  public function buildApplication(?string $name): void
+  {
+  }
+
+  public function buildClass(?string $name): void
+  {
+  }
+  
   public function buildController(?string $name): void
   {
     if (empty($name))
@@ -78,7 +86,37 @@ final class SchematicBuilder
 
     if (file_exists($modulePath))
     {
-      WorkspaceManager::updateModule(moduleName: $name, targetArray: 'controllers', newEntry: $name);
+      WorkspaceManager::updateModule(moduleName: $name, targetArray: 'controllers', newEntry: "${name}Controller");
+    }
+  }
+
+  public function buildEntity(?string $path): void
+  {
+  }
+
+  public function buildFeature(?string $name): void
+  {
+    $this->buildModule(name: $name);
+    
+    usleep(100000);
+    $this->buildController(name: $name);
+    
+    usleep(100000);
+    $this->buildService(name: $name);
+    
+    $choice = prompt(message: 'Would you like to generate a repository', defaultValue: 'Y');
+
+    if (in_array(strtolower($choice), ['y', 'yes', 'yeah']))
+    {
+      $this->buildRepository(name: $name);
+    }
+    
+    $choice = prompt(message: 'Would you like to generate an entity', defaultValue: 'Y');
+    
+    if (in_array(strtolower(trim($choice)), ['y', 'yes', 'yeah']))
+    {
+      $entityName = prompt(message: 'Entity name', attempts: 3);
+      $this->buildEntity(path: $entityName);
     }
   }
 
@@ -148,6 +186,79 @@ final class SchematicBuilder
     if (file_exists($modulePath))
     {
       WorkspaceManager::updateRoutes(moduleName: $name);
+    }
+  }
+
+  public function buildRepository(?string $name): void
+  {
+  }
+
+  public function buildService(?string $name): void
+  {
+    if (empty($name))
+    {
+      $name = prompt('Service name', attempts: 3);
+    }
+
+    $templatePath = $this->templateDirectory() . "/Service.Template.php";
+    $modulesDirectory = $this->modulesDirectory();
+    $featureDirectory = "$modulesDirectory/$name";
+    $featureDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $featureDirectory);
+    $targetFile = "$featureDirectory/${name}Service.php";
+    $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
+
+    if (!file_exists($templatePath))
+    {
+      Logger::error("Missing schematic template.");
+    }
+
+    if (!file_exists($modulesDirectory))
+    {
+      if (!mkdir($modulesDirectory))
+      {
+        Logger::error("Could not create modules directory.", terminateAfterLog: true);
+      }
+
+      if ($this->verbose)
+      {
+        Logger::logCreate('app/src/Modules');
+      }
+    }
+
+    if (!file_exists($featureDirectory))
+    {
+      if (!mkdir($featureDirectory))
+      {
+        Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
+      }
+
+      if ($this->verbose)
+      {
+        Logger::logCreate($featureDirectoryRelative);
+      }
+    }
+
+    if (file_exists($targetFile))
+    {
+      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+    }
+    $content = file_get_contents($templatePath);
+    $content = str_replace('ModuleName', $name, $content);
+
+    $filesize = file_put_contents(filename: $targetFile, data: $content);
+
+    if ($filesize === false)
+    {
+      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+    }
+
+    Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
+
+    $modulePath = $featureDirectory . "/${name}Module.php";
+
+    if (file_exists($modulePath))
+    {
+      WorkspaceManager::updateModule(moduleName: $name, targetArray: 'providers', newEntry: "${name}Service");
     }
   }
 

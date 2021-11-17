@@ -51,7 +51,7 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   $defaultHint = '';
   if (!empty($defaultValue))
   {
-    $defaultHint = "($defaultValue)";
+    $defaultHint = "($defaultValue) ";
   }
 
   $isValid = false;
@@ -85,6 +85,11 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
     }
   }
   while(!$isValid);
+
+  if (empty($line) && !is_null($defaultValue))
+  {
+    $line = $defaultValue;
+  }
 
   return $line;
 }
