@@ -41,7 +41,7 @@ final class SchematicBuilder
 
     if (!file_exists($modulesDirectory))
     {
-      if (!mkdir($modulesDirectory))
+      if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
         Logger::error("Could not create modules directory.", terminateAfterLog: true);
       }
@@ -54,7 +54,7 @@ final class SchematicBuilder
 
     if (!file_exists($featureDirectory))
     {
-      if (!mkdir($featureDirectory))
+      if (!mkdir(directory: $featureDirectory, recursive: true))
       {
         Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
       }
@@ -90,20 +90,59 @@ final class SchematicBuilder
     }
   }
 
-  public function buildEntity(?string $path): void
+  public function buildEntity(?string $path, ?string $featureName = null): void
   {
+    if (empty($path))
+    {
+      $path = prompt('Entity path', attempts: 3);
+    }
+
+    if (!empty($featureName))
+    {
+      $path = "$featureName/$path";
+    }
+
+    $tableName = $featureName ?? prompt('Which database table does the entity represent');
+
+    $templatePath = $this->templateDirectory() . "/Entity.Template.php";
+    $modulesDirectory = $this->modulesDirectory();
+    $targetFile = "$modulesDirectory/${path}Entity.php";
+    $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
+
+    if (!file_exists($templatePath))
+    {
+      Logger::error("Missing schematic template.");
+    }
+
+    if (file_exists($targetFile))
+    {
+      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+    }
+    $content = file_get_contents($templatePath);
+    $content = str_replace('/', '\\', str_replace('ModuleName', $path, $content));
+    $content = str_replace('TableName', strtolower($tableName), $content);
+
+    $filesize = file_put_contents(filename: $targetFile, data: $content);
+
+    if ($filesize === false)
+    {
+      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+    }
+
+    Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
   }
 
   public function buildFeature(?string $name): void
   {
     $this->buildModule(name: $name);
     
-    usleep(300000);
+    usleep(1200000);
     $this->buildController(name: $name);
     
-    usleep(300000);
+    usleep(1200000);
     $this->buildService(name: $name);
     
+    usleep(1200000);
     $choice = prompt(message: 'Would you like to generate a repository', defaultValue: 'Y');
 
     if (in_array(strtolower($choice), ['y', 'yes', 'yeah']))
@@ -111,12 +150,13 @@ final class SchematicBuilder
       $this->buildRepository(name: $name);
     }
     
+    usleep(1200000);
     $choice = prompt(message: 'Would you like to generate an entity', defaultValue: 'Y');
     
     if (in_array(strtolower(trim($choice)), ['y', 'yes', 'yeah']))
     {
       $entityName = prompt(message: 'Entity name', attempts: 3);
-      $this->buildEntity(path: $entityName);
+      $this->buildEntity(path: $entityName, featureName: $name);
     }
   }
 
@@ -141,7 +181,7 @@ final class SchematicBuilder
 
     if (!file_exists($modulesDirectory))
     {
-      if (!mkdir($modulesDirectory))
+      if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
         Logger::error("Could not create modules directory.", terminateAfterLog: true);
       }
@@ -154,7 +194,7 @@ final class SchematicBuilder
 
     if (!file_exists($featureDirectory))
     {
-      if (!mkdir($featureDirectory))
+      if (!mkdir(directory: $featureDirectory, recursive: true))
       {
         Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
       }
@@ -210,7 +250,7 @@ final class SchematicBuilder
 
     if (!file_exists($modulesDirectory))
     {
-      if (!mkdir($modulesDirectory))
+      if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
         Logger::error("Could not create modules directory.", terminateAfterLog: true);
       }
@@ -223,7 +263,7 @@ final class SchematicBuilder
 
     if (!file_exists($featureDirectory))
     {
-      if (!mkdir($featureDirectory))
+      if (!mkdir(directory: $featureDirectory, recursive: true))
       {
         Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
       }
@@ -280,7 +320,7 @@ final class SchematicBuilder
 
     if (!file_exists($modulesDirectory))
     {
-      if (!mkdir($modulesDirectory))
+      if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
         Logger::error("Could not create modules directory.", terminateAfterLog: true);
       }
@@ -293,7 +333,7 @@ final class SchematicBuilder
 
     if (!file_exists($featureDirectory))
     {
-      if (!mkdir($featureDirectory))
+      if (!mkdir(directory: $featureDirectory, recursive: true))
       {
         Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
       }

@@ -18,6 +18,7 @@ final class WorkspaceManager
   {
     global $workingDirectory;
     $moduleFilePath = sprintf("%s/app/src/Modules/%s/%sModule.php", $workingDirectory, $moduleName, $moduleName);
+    $moduleFilePathRelative = str_replace($workingDirectory, '', $moduleFilePath);
     
     if (file_exists($moduleFilePath))
     {
@@ -76,7 +77,7 @@ final class WorkspaceManager
 
       $bytes = file_put_contents($moduleFilePath, trim($output));
 
-      echo "\e[1;34mUPDATE\e[0m ${moduleFilePath} ($bytes bytes)\n";
+      Logger::logUpdate(path: $moduleFilePathRelative, filesize: $bytes);
     }
   }
 
