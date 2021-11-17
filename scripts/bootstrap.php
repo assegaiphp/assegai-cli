@@ -107,3 +107,18 @@ function bytes_format(?int $bytes): string
     default => "$bytes bytes"
   };
 }
+
+function getHeader(): string
+{
+  global $assegaiPath;
+  $content = file_get_contents(sprintf("%s/scripts/header.txt", $assegaiPath));
+  $output = Color::RED;
+  $output .= $content;
+  $output .= Color::RESET;
+  return $output;
+}
+
+function printHeader(): void
+{
+  echo getHeader() . "\n";
+}
