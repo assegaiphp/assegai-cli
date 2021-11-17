@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\RepositoryName;
+namespace Assegai\Modules\ModuleName;
 
 use Assegai\Core\Attributes\Injectable;
 use Assegai\Database\Attributes\Repository;
@@ -11,7 +11,7 @@ use Assegai\Database\BaseRepository;
   tableName: 'TableName'
 )]
 #[Injectable]
-class RepositoryTemplate extends BaseRepository
+class ModuleNameRepository extends BaseRepository
 {
 }
 

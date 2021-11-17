@@ -1,12 +1,12 @@
 <?php
 
-namespace Assegai\Modules\EntityName;
+namespace Assegai\Modules\ModuleName;
 
 use Assegai\Database\Attributes\Entity;
 use Assegai\Database\BaseEntity;
 
 #[Entity(tableName: TableName)]
-class EntityTemplate extends BaseEntity
+class ClassName extends BaseEntity
 {
 }
 

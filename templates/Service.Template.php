@@ -6,6 +6,6 @@ use Assegai\Core\Attributes\Injectable;
 use Assegai\Core\BaseCrudService;
 
 #[Injectable]
-class ServiceTemplate extends BaseCrudService
+class ModuleNameService extends BaseCrudService
 {
 }

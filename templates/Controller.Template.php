@@ -14,7 +14,7 @@ use Assegai\Database\Interfaces\IEntity;
 use stdClass;
 
 #[Controller(path: 'PathName')]
-class ControllerTemplate extends BaseController
+class ModuleNameController extends BaseController
 {
   #[Get]
   public function findAll(): Response

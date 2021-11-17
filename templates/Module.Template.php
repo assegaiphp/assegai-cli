@@ -11,7 +11,7 @@ use Assegai\Core\Attributes\Module;
   imports: [],
   providers: [],
 )]
-class ModuleTemplate extends BaseModule
+class ModuleNameModule extends BaseModule
 {
 }
 
