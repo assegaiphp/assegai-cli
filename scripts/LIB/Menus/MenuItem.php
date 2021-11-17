@@ -42,13 +42,13 @@ class MenuItem
     $color = strtolower($this->indexColor);
     $indexColorCode = match($color) {
       'black'   => Color::BLACK,
-      'red'     => Color::RED,
-      'green'   => Color::GREEN,
-      'yellow'  => Color::YELLOW,
-      'magenta' => Color::MAGENTA,
-      'cyan'    => Color::CYAN,
-      'white'   => Color::WHITE,
-      default   => Color::BLUE
+      'red'     => Color::LIGHT_RED,
+      'green'   => Color::LIGHT_GREEN,
+      'yellow'  => Color::LIGHT_YELLOW,
+      'magenta' => Color::LIGHT_MAGENTA,
+      'cyan'    => Color::LIGHT_CYAN,
+      'white'   => Color::LIGHT_WHITE,
+      default   => Color::LIGHT_BLUE
     };
 
     $output = '';
