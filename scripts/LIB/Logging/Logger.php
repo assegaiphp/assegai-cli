@@ -38,22 +38,22 @@ final class Logger
     }
   }
 
-  public static function logCreate(string $path): void
+  public static function logCreate(string $path, ?int $filesize = null): void
   {
-    Logger::logFileAction(action: Logger::FILE_CREATE, path: $path);
+    Logger::logFileAction(action: Logger::FILE_CREATE, path: $path, filesize: $filesize);
   }
 
-  public static function logUpdate(string $path): void
+  public static function logUpdate(string $path, ?int $filesize = null): void
   {
-    Logger::logFileAction(action: Logger::FILE_UPDATE, path: $path);
+    Logger::logFileAction(action: Logger::FILE_UPDATE, path: $path, filesize: $filesize);
   }
 
-  public static function logDelete(string $path): void
+  public static function logDelete(string $path, ?int $filesize = null): void
   {
-    Logger::logFileAction(action: Logger::FILE_DELETE, path: $path);
+    Logger::logFileAction(action: Logger::FILE_DELETE, path: $path, filesize: $filesize);
   }
 
-  private static function logFileAction(string $action = Logger::FILE_CREATE, string $path): void
+  private static function logFileAction(string $action = Logger::FILE_CREATE, string $path, ?int $filesize = null): void
   {
     $colorCode = match($action) {
       Logger::FILE_CREATE => "\e[1;32m",
@@ -62,6 +62,9 @@ final class Logger
       default => "\e[1;33m"
     };
 
-    echo "${colorCode}${action}\e[0m $path\n";
+    $bytes = bytes_format(bytes: $filesize);
+    $suffix = is_null($filesize) ? '' : " ($bytes)";
+
+    echo "${colorCode}${action}\e[0m ${path}${suffix}\n";
   }
 }
