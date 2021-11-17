@@ -84,10 +84,11 @@ final class WorkspaceManager
   {
     global $workingDirectory;
     $routesFilePath = sprintf("%s/app/routes.php", $workingDirectory);
+    $routesFilePathRelative = str_replace($workingDirectory, '', $routesFilePath);
     $namespace = "use Assegai\\Modules\\${moduleName}\\${moduleName}Module;";
     $path = strtolower($moduleName);
     $class = "${moduleName}Module::class";
-    $route = "  'new Route(path: '${path}', module: ${class}),";
+    $route = "  new Route(path: '${path}', module: ${class}),";
 
     $lines = file($routesFilePath);
 
@@ -155,6 +156,11 @@ final class WorkspaceManager
 
     $bytes = file_put_contents($routesFilePath, trim($lines));
 
-    Logger::logUpdate(sprintf("app/routes.php (%d bytes)", $bytes));
+    if ($bytes === false)
+    {
+      Logger::error("Could not update $routesFilePathRelative", terminateAfterLog: true);
+    }
+
+    Logger::logUpdate(sprintf("%s (%d bytes)", $routesFilePathRelative, $bytes));
   }
 }
