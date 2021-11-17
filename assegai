@@ -15,7 +15,7 @@ service_template="${assegai_path}templates/Service.Template.php"
 repository_template="${assegai_path}templates/Repository.Template.php"
 
 # Scripts path
-scripts_dir="${assegai_path}scripts/"
+src_dir="${assegai_path}src/"
 
 version="1.0.0"
 config="${working_dir}assegai.json"
@@ -87,12 +87,12 @@ GetBytes () {
 }
 
 UpdateModule() {
-  script="${assegai_path}scripts/update-module.php"
+  script="${assegai_path}src/update-module.php"
   php $script ${@}
 }
 
 UpdateRoutes() {
-  script="${assegai_path}scripts/update-routes.php"
+  script="${assegai_path}src/update-routes.php"
   php $script ${@}
 }
 
@@ -135,11 +135,11 @@ Config () {
 }
 
 Migration () {
-  php "${scripts_dir}migration.php" ${@}
+  php "${src_dir}migration.php" ${@}
 }
 
 Database () {
-  php "${scripts_dir}database.php" ${@}
+  php "${src_dir}database.php" ${@}
 }
 
 GenerateController() {
@@ -397,7 +397,7 @@ GenerateFeature () {
 }
 
 Generate () {
-  php "${scripts_dir}generate.php" ${@}
+  php "${src_dir}generate.php" ${@}
 }
 
 Version () {
@@ -609,15 +609,15 @@ case $1 in
 
   v)
     Version
-    # php "${scripts_dir}version.php" ${@}
+    # php "${src_dir}version.php" ${@}
   ;;
 
   info)
-    php "${scripts_dir}info.php" ${@}
+    php "${src_dir}info.php" ${@}
   ;;
 
   *)
-    php "${scripts_dir}help.php" ${@}
+    php "${src_dir}help.php" ${@}
     # Help $2
   ;;
 esac

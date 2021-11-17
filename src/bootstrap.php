@@ -18,7 +18,7 @@ if (!empty($assegaiPath))
 spl_autoload_register(function ($class) {
   global $assegaiPath;
   $filename = str_replace('\\', DIRECTORY_SEPARATOR, $assegaiPath . "\\$class") . '.php';
-  $filename = str_replace('Assegai', 'scripts', $filename);
+  $filename = str_replace('Assegai', 'src', $filename);
 
   if (file_exists($filename))
   {
@@ -111,7 +111,7 @@ function bytes_format(?int $bytes): string
 function getHeader(): string
 {
   global $assegaiPath;
-  $content = file_get_contents(sprintf("%s/scripts/header.txt", $assegaiPath));
+  $content = file_get_contents(sprintf("%s/src/header.txt", $assegaiPath));
   $output = Color::RED;
   $output .= $content;
   $output .= Color::RESET;

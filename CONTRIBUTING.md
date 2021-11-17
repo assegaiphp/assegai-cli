@@ -136,7 +136,7 @@ $ php composer.phar update
 2. In order to prepare your environment run the `prepare.sh` shell script:
 
 ```bash
-$ sh scripts/prepare.sh
+$ sh src/prepare.sh
 ```
 
 That will compile fresh packages and afterward, move them all to `sample` directories.
