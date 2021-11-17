@@ -12,4 +12,3 @@ list($name) = match (count($args)) {
 
 $schematicBuilder = new SchematicBuilder;
 $schematicBuilder->buildModule(name: $name);
-

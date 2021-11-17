@@ -7,11 +7,6 @@ use Assegai\LIB\Menus\MenuOptions;
 
 require_once 'bootstrap.php';
 
-list($command) = match (count($args)) {
-  1 => [null],
-  default => array_slice($args, 1)
-};
-
 # List options
 $mainMenu = new Menu(
   title: 'Available Commands',
@@ -32,17 +27,5 @@ $mainMenu->addRange([
   new MenuItem(value: 'version', alias: 'v', description: 'Outputs Assegai CLI version.'),
 ]);
 
-if (empty($command))
-{
-  printHeader();
-  printf("%s\n", $mainMenu);
-}
-else if (!$mainMenu->hasItemWithValue(valueOrAlias: $command))
-{
-  printHeader();
-  printf("%s\n", $mainMenu);
-}
-else
-{
-  $mainMenu->describeItem(itemValueOrIndex: $command);
-}
+printHeader();
+printf("%s\n", $mainMenu);

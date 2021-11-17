@@ -122,3 +122,13 @@ function printHeader(): void
 {
   echo getHeader() . "\n";
 }
+
+function getVersion(): string
+{
+  return '1.0.0';
+}
+
+function printVersion(): void
+{
+  echo getVersion();
+}

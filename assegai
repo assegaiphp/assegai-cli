@@ -397,88 +397,7 @@ GenerateFeature () {
 }
 
 Generate () {
-  CheckWorkspace "generate"
-  src=$(Config "")
-  src_dir="$working_dir/"
-  verbose=0
-
-  if test ! $1; then
-    Help "generate"
-  else
-    case $1 in
-      controller)
-      if test ! $2; then
-          read -p $'\e[1;32m?\e[0m Controller name: \e[1;34m' name
-      else
-          name=$2
-      fi
-      GenerateController $name
-      ;;
-      
-      entity)
-      if test ! $2; then
-          read -p $'\e[1;32m?\e[0m Entity name: \e[1;34m' name
-      else
-          name=$2
-      fi
-      GenerateEntity $name
-      ;;
-
-      feature)
-      if test ! $2; then
-          read -p $'\e[1;32m?\e[0m Feature name: \e[1;34m' name
-      else
-          name=$2
-      fi
-      GenerateFeature $name
-      ;;
-      
-      module)
-      if test ! $2; then
-          read -p $'\e[1;32m?\e[0m Module name: \e[1;34m' name
-      else
-          name=$2
-      fi
-      GenerateModule $name
-      ;;
-
-      repository)
-            if test ! $2; then
-          read -p $'\e[1;32m?\e[0m Repository name: \e[1;34m' name
-      else
-          name=$2
-      fi
-      GenerateRepository $name
-      ;;
-
-      service)
-            if test ! $2; then
-          read -p $'\e[1;32m?\e[0m Service name: \e[1;34m' name
-      else
-          name=$2
-      fi
-      GenerateService $name
-      ;;
-      
-      *)
-      Error "An unhandled exception occurred: Schematic \"$1\" not found in collection."
-      # Log error
-      exit
-      ;;
-    esac
-  fi
-  exit
-  # Check if function invoked without arguments
-
-  # if [[]]
-
-  for s in "${schematics[@]}"
-  do
-    echo "$s"
-  done
-
-  read -p $'\e[0;32m?\e[0;0m What name would you like to use for the module? ' name
-  echo "Component name: $name"
+  php "${scripts_dir}generate.php" ${@}
 }
 
 Version () {
@@ -690,9 +609,15 @@ case $1 in
 
   v)
     Version
+    # php "${scripts_dir}version.php" ${@}
+  ;;
+
+  info)
+    php "${scripts_dir}info.php" ${@}
   ;;
 
   *)
-    Help $2
+    php "${scripts_dir}help.php" ${@}
+    # Help $2
   ;;
 esac
