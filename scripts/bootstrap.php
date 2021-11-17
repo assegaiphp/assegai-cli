@@ -46,7 +46,7 @@ function checkWorkspace(?string $commandName = null): void
   }
 }
 
-function prompt(string $message = 'Enter choice', ?string $defaultValue = null): string
+function prompt(string $message = 'Enter choice', ?string $defaultValue = null, ?int $attempts = null): string
 {
   $defaultHint = '';
   if (!empty($defaultValue))
@@ -54,9 +54,47 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null):
     $defaultHint = "($defaultValue)";
   }
 
-  printf("%s?%s %s: %s%s", Color::GREEN, Color::RESET, $message, $defaultHint, Color::BLUE);
-  $line = trim(fgets(STDIN));
-  echo Color::RESET;
+  $isValid = false;
+  $attemptsLeft = $attempts;
+
+  do
+  {
+    printf("%s?%s %s: %s%s", Color::GREEN, Color::RESET, $message, $defaultHint, Color::BLUE);
+    $line = trim(fgets(STDIN));
+    echo Color::RESET;
+
+    if (is_null($attemptsLeft))
+    {
+      $isValid = true;
+    }
+    else
+    {
+      --$attemptsLeft;
+      if (!empty($line))
+      {
+        $isValid = true;
+      }
+      else if ($attemptsLeft === 0)
+      {
+        exit(1);
+      }
+      else
+      {
+        printf("%sInvalid input: %d attempts left%s\n", Color::MAGENTA, $attemptsLeft, Color::RESET);
+      }
+    }
+  }
+  while(!$isValid);
 
   return $line;
+}
+
+function bytes_format(int $bytes): string
+{
+  return match (true) {
+    $bytes < 1024 => "$bytes bytes",
+    $bytes < 1048576 => number_format($bytes / 1024, 2) . " MB",
+    $bytes < 1073741824 => number_format($bytes / 1048576, 2) . " GB",
+    default => "$bytes bytes"
+  };
 }
