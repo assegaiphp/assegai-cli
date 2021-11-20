@@ -28,7 +28,7 @@ $mainMenu->addRange([
   new MenuItem(value: 'init', description: 'Creates an empty Assegai workspace or reinitialize an existing one.'),
   new MenuItem(value: 'lint', description: 'Runs the code linter.'),
   new MenuItem(value: 'migration', description: 'Manages database migrations.'),
-  new MenuItem(value: 'new', description: 'Generates Assegai application.'),
+  new MenuItem(value: 'new', description: 'Generates a new Assegai application.'),
   new MenuItem(value: 'test', alias: 't', description: 'Runs unit tests in a project.'),
   new MenuItem(value: 'update', alias: 'u', description: 'Updates your application and its dependencies. See https://update.assegai.ml/'),
   new MenuItem(value: 'version', alias: 'v', description: 'Outputs Assegai CLI version.'),
