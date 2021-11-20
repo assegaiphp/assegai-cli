@@ -3,6 +3,7 @@
 
 namespace Assegai\LIB\Generation;
 
+use Assegai\LIB\Color;
 use Assegai\LIB\Logging\Logger;
 use Assegai\LIB\WorkspaceManager;
 
@@ -134,6 +135,10 @@ final class SchematicBuilder
 
   public function buildFeature(?string $name): void
   {
+    if (empty($name))
+    {
+      $name = prompt(sprintf("What's the name of the feature", Color::LIGHT_GREEN, Color::RESET), attempts: 3);
+    }
     $this->buildModule(name: $name);
     
     usleep(1200000);
@@ -295,7 +300,7 @@ final class SchematicBuilder
 
     if (file_exists($modulePath))
     {
-      WorkspaceManager::updateModule(moduleName: $name, targetArray: 'controllers', newEntry: "${name}Controller");
+      WorkspaceManager::updateModule(moduleName: $name, targetArray: 'providers', newEntry: "${name}Repository");
     }
   }
 
