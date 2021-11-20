@@ -49,9 +49,10 @@ function checkWorkspace(?string $commandName = null): void
 function prompt(string $message = 'Enter choice', ?string $defaultValue = null, ?int $attempts = null): string
 {
   $defaultHint = '';
+  $line = '';
   if (!empty($defaultValue))
   {
-    $defaultHint = "($defaultValue) ";
+    $defaultHint = Color::DARK_WHITE . "($defaultValue) ";
   }
 
   $isValid = false;
@@ -59,7 +60,7 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
 
   do
   {
-    printf("%s?%s %s: %s%s", Color::GREEN, Color::RESET, $message, $defaultHint, Color::BLUE);
+    printf("%s?%s %s: %s%s", Color::GREEN, Color::RESET, $message, $defaultHint, Color::LIGHT_BLUE);
     $line = trim(fgets(STDIN));
     echo Color::RESET;
 
@@ -69,6 +70,11 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
     }
     else
     {
+      if(!empty($defaultValue))
+      {
+        $line = $defaultValue;
+      }
+
       --$attemptsLeft;
       if (!empty($line))
       {
@@ -92,6 +98,11 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   }
 
   return $line;
+}
+
+function confirm(string $message, ?int $attempts = null, ): bool
+{
+  return false;
 }
 
 function bytes_format(?int $bytes): string
@@ -125,10 +136,64 @@ function printHeader(): void
 
 function getVersion(): string
 {
-  return '1.0.0';
+  global $workingDirectory, $assegaiPath;
+
+  $version = exec("cd $assegaiPath && git describe && cd $workingDirectory") . "\n";
+  return $version;
 }
 
 function printVersion(): void
 {
   echo getVersion();
+}
+
+function jsonPrettify(string $json): string
+{
+  $output = json_encode(json_decode(json: $json), JSON_PRETTY_PRINT);
+  $output = preg_replace('/(".*"):\s*(".*")*,*/', sprintf("%s%s%s: %s%s%s", Color::LIGHT_BLUE, "$1", Color::RESET, Color::YELLOW, "$2", Color::RESET), $output);
+  
+  if (!str_ends_with($output, "\n"))
+  {
+    $output .= "\n";
+  }
+
+  return $output;
+}
+
+function clamp(int|float $value, int|float $min, int|float $max): int|float
+{
+  if ($value < $min)
+  {
+    return $min;
+  }
+
+  if ($value > $max) {
+    return $max;
+  }
+
+  return $value;
+}
+
+function getLoadingBar(int $percentage = 0)
+{
+  $percentage = clamp($percentage, 0, 100);
+  $bar = '';
+  $space = '';
+  
+  for ($x = 0; $x < $percentage; $x++)
+ 	{
+    $bar .= '█';
+  }
+  
+  for ($x = $percentage; $x < 100; $x++)
+  {
+    $space .= '░';
+  }
+       
+  return sprintf("%-6s[%s%s]<br>", "${percentage}%", $bar, $space);
+}
+
+function printLoadingBad(int $percentage = 0)
+{
+  return getLoadingBar(percentage: $percentage);
 }
