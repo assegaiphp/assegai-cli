@@ -3,6 +3,4 @@
 
 require_once 'bootstrap.php';
 
-printHeader();
-
-printf("Assegai CLI: %s", getVersion());
+printf("%s", getVersion());

@@ -8,7 +8,7 @@ require_once 'bootstrap.php';
 $systemInfo = [
   'OS Version'        => PHP_OS_FAMILY,
   'PHP Version'       => PHP_VERSION,
-  'Composer Version'  => exec('composer -V'),
+  'Composer Version'  => str_replace('Composer version ', '', exec('composer -V')),
 ];
 
 $assegaiCLI = [
