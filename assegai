@@ -96,21 +96,6 @@ UpdateRoutes() {
   php $script ${@}
 }
 
-Header () {
-  echo -e "\e[0;31m"
-  echo '                                    _     _____ _      _____ '
-  echo '     /\                            (_)   / ____| |    |_   _|'
-  echo '    /  \   ___ ___  ___  __ _  __ _ _   | |    | |      | |  '
-  echo '   / /\ \ / __/ __|/ _ \/ _` |/ _` | |  | |    | |      | |  '
-  echo '  / ____ \\__ \__ \  __/ (_| | (_| | |  | |____| |____ _| |_ '
-  echo ' /_/    \_\___/___/\___|\__, |\__,_|_|   \_____|______|_____|'
-  echo '                         __/ |                               '
-  echo '                        |___/                                '
-
-  echo -e "\e[0;0m"
-  echo ""
-}
-
 # Command Functions
 Config () {
   CheckWorkspace "config"
@@ -136,66 +121,6 @@ Config () {
 
 Migration () {
   php "${src_dir}migration.php" ${@}
-}
-
-Help () {
-  case $1 in
-    config)
-      echo "Retrieves or sets Assegai configuration values in the assegai.json file for the workspace."
-      echo "usage: assegai config <jsonPath> <value> [options]"
-
-      echo -e "\narguments:"
-      echo -e "  \e[1;34mjsonPath\e[0m"
-      echo -e "    The configuration key to set or query, in JSON path format. For example: \"a[3].foo.bar[2]\". If no new value is provided, returns the current value of this key."
-      echo -e "  \e[1;34mvalue\e[0m"
-      echo -e "    If provided, a new value for the given configuration key."
-
-      echo -e "\noptions:"
-      echo -e "  \e[1;34m--global\e[0m (-g)"
-      echo -e "    Access the global configuration in the caller's home directory."
-      echo -e "  \e[1;34m--help\e[0m"
-      echo -e "    Shows a help message for this command in the console."
-    ;;
-
-    generate)
-      echo "Generates and/or modifies files based on a schematic."
-      echo "usage: assegai generate <schematic> [options]"
-
-      echo -e "\narguments:\n  \e[1;34mschematic\e[0m"
-      echo -e "    The schematic or collection:schematic to generate."
-
-      echo -e "\noptions:"
-      echo -e "  \e[1;34m--defaults\e[0m"
-      echo -e "    Disable interactive input prompts for options with a default."
-      echo -e "  \e[1;34m--dry-run\e[0m (-d)"
-      echo -e "     Run through and reports activity without writing out results."
-      echo -e "  \e[1;34m--force\e[0m (-f)"
-      echo -e "     Force overwriting of existing files."
-      echo -e "  \e[1;34m--help\e[0m"
-      echo -e "     Shows a help message for this command in the console."
-      echo -e "  \e[1;34m--interactive\e[0m"
-      echo -e "      Enable interactive input prompts."
-
-      echo -e "\nAvailable Schematics:"
-      for s in "${schematics[@]}"
-      do
-        echo -e "  $s"
-      done
-      echo ""
-    ;;
-
-    *)
-      Header
-      echo "Available Commands:"
-      echo -e "  \e[1;34mconfig \e[0;0m\tRetrieves or sets Assegai configuration values in the assegai.json file for the workspace."
-      echo -e "  \e[1;34mdatabase \e[0;0m(d)\tGenerates and/or modifies files based on a schematic."
-      echo -e "  \e[1;34mgenerate \e[0;0m(g)\tGenerates and/or modifies files based on a schematic."
-      echo -e "  \e[1;34minit \e[0;0m\t\tCreate an empty Assegai workspace or reinitialize an existing one"
-      echo -e "  \e[1;34mnew \e[0;0m\t\tGenerate Assegai application."
-      echo -e "  \e[1;34mversion \e[0;0m(v)\tOutputs Assegai CLI version."
-      echo -e "\nFor more detailed help run \"assegai help [command name]\""
-    ;;
-  esac
 }
 
 Init () {
@@ -228,59 +153,6 @@ Init () {
     echo -e "\nReinitialized existing Assegai workspace in $working_dir"
   fi
   exit
-}
-
-NewApplicationHelp () {
-  declare -A available_options=(["-d"]="--directory" ["-h"]="--help")
-  declare -A descriptions=(["--directory"]="Specify the destination directory." ["--help"]="Output usage information.")
-  echo -e "Usage: assegai new|n [options] [name]"
-  echo -e "\nGenerate Nest application"
-  echo -e "\nOptions:"
-  for alias in "${!available_options[@]}"
-  do
-    option_name=${available_options[$alias]}
-    if test $alias = "-d"; then
-      echo -e "  ${option_name} [directory]\t\t\t${descriptions[$option_name]}"
-    else
-      echo -e "  ${alias}, ${available_options[$alias]}\t\t\t\t\t${descriptions[$option_name]}"
-    fi
-  done
-  exit
-}
-
-NewApplication () {
-  git_source="https://github.com/amasiye/assegai-php.git"
-  case $1 in
-    --help)
-    NewApplicationHelp
-    ;;
-
-    -h)
-    NewApplicationHelp
-    ;;
-
-    *)
-    if test -z $1; then
-      NewApplicationHelp
-    else
-      project_name=$1
-      echo -e "⚡  We will scaffold your app in a few seconds..."
-
-      if test ! -d $project_name; then
-        mkdir $project_name
-        
-        if test ! -d $project_name; then
-          echo -e "\e[1;31mCouldn't not create project directory: ${project_name}\e[0m"
-          exit
-        fi
-        LogAction "create" "${project_name}"
-      fi
-
-
-
-    fi
-    ;;
-  esac
 }
 
 case $1 in
