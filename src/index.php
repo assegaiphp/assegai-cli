@@ -1,31 +1,32 @@
 #!/usr/bin/php
 <?php
 
-use Assegai\LIB\Menus\Menu;
-use Assegai\LIB\Menus\MenuItem;
-use Assegai\LIB\Menus\MenuOptions;
+use Assegai\LIB\Logging\Logger;
 
 require_once 'bootstrap.php';
 
-# List options
-$mainMenu = new Menu(
-  title: 'Available Commands',
-  options: new MenuOptions(
-    showDescriptions: true,
-    showIndexes: false
-  )
-);
-$mainMenu->addRange([
-  new MenuItem(value: 'config', description: 'Retrieves or sets Assegai configuration values in the assegai.json file for the workspace.'),
-  new MenuItem(value: 'database', alias: 'd', description: 'Manage configured database schemas.'),
-  new MenuItem(value: 'generate', alias: 'g', description: 'Generates and/or modifies files based on a schematic.'),
-  new MenuItem(value: 'init', description: 'Create an empty Assegai workspace or reinitialize an existing one.'),
-  new MenuItem(value: 'migration', description: 'Manage database migrations.'),
-  new MenuItem(value: 'new', description: 'Generate Assegai application.'),
-  new MenuItem(value: 'test', alias: 't', description: 'Runs unit tests in a project.'),
-  new MenuItem(value: 'update', alias: 'u', description: 'Updates your application and its dependencies. See https://update.assegai.ml/'),
-  new MenuItem(value: 'version', alias: 'v', description: 'Outputs Assegai CLI version.'),
-]);
+list($command, $requiredArg, $optionalArg, $option) = match (count($args)) {
+  1       => [$args[0], null,     null,     null],
+  2       => [$args[0], $args[1], null,     null],
+  3       => [$args[0], $args[1], $arg[2],  null],
+  default => $args
+};
 
-printHeader();
-printf("%s\n", $mainMenu);
+if (empty($command) || !$mainMenu->hasItemWithValue(valueOrAlias: $command))
+{
+  printHeader();
+  printf("%s\n", $mainMenu);
+}
+else if (in_array($requiredArg, ['--help', '-h']))
+{
+  $mainMenu->describeItem(itemValueOrIndex: $command);
+}
+else
+{
+  if (!file_exists("$assegaiPath/src/$command.php"))
+  {
+    Logger::error(message: "Unknown command $command", terminateAfterLog: true);
+  }
+
+  require_once "$assegaiPath/src/$command.php";
+}
