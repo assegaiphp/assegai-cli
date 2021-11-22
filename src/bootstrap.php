@@ -52,7 +52,7 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   $line = '';
   if (!empty($defaultValue))
   {
-    $defaultHint = Color::DARK_WHITE . "($defaultValue) ";
+    $defaultHint = Color::DARK_WHITE . "($defaultValue) " . Color::RESET;
   }
 
   $isValid = false;
