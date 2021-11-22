@@ -55,10 +55,28 @@ class Menu
     return key_exists(key: $index, array: $this->items);
   }
 
+  public function getItemValue(string $valueOrAlias): string|bool
+  {
+    if ($this->hasItemWithValue(valueOrAlias: $valueOrAlias))
+    {
+      $value = null;
+
+      foreach ($this->items as $item)
+      {
+        if ($item->value() === $valueOrAlias || $item->alias() === $valueOrAlias)
+        {
+          return $item->value();
+        }
+      }
+    }
+
+    return false;
+  }
+
   public function hasItemWithValue(string $valueOrAlias): bool
   {
     $hasItem = false;
-
+    
     foreach ($this->items as $item)
     {
       if ($item->value() === $valueOrAlias || $item->alias() === $valueOrAlias)
