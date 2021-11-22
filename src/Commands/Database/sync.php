@@ -43,8 +43,8 @@ if (count($moduleNames) < 3)
 
 $moduleNames = array_slice($moduleNames, 2);
 
-use Assegai\CLI\Database\Schema;
-use Assegai\CLI\Database\SchemaOptions;
+use Assegai\Database\Schema;
+use Assegai\Database\SchemaOptions;
 
 foreach($moduleNames as $moduleName)
 {
