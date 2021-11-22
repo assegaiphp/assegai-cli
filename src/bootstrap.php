@@ -197,3 +197,48 @@ function printLoadingBad(int $percentage = 0)
 {
   return getLoadingBar(percentage: $percentage);
 }
+
+function pascalToSnake(string $term): string
+{
+  $length = strlen($term);
+  $token = '';
+
+  for ($x = 0; $x < $length; $x++)
+  {
+    $ch = substr($term, $x, 1);
+
+    if (ctype_upper($ch))
+    {
+      $token .= $x === 0 ? $ch : "_$ch";
+    }
+    else
+    {
+      $token .= strtolower($ch);
+    }
+  }
+
+  return strtolower($token);
+}
+
+function snakeToPascal(string $word): string
+{
+  $tokens = explode('_', $word);
+  $result = '';
+  
+  foreach ($tokens as $token)
+  {
+    $result .= strtoupper(substr($token, 0, 1));
+    $result .= substr($token, 1);
+  }
+  
+  return $result;
+}
+
+function snakeToCamel(string $word): string
+{
+  $buffer = snakeToPascal(word: $word);
+  $token 	= strtolower(substr($buffer, 0, 1));
+  $token .= substr($buffer, 1);
+  
+  return $token;
+}
