@@ -17,7 +17,7 @@ Before we create a new Assegai application on your Windows machine, make sure to
 
 Next, you are ready to create your first Assegai project. Launch Windows Terminal and begin a new terminal session for your WSL2 Linux operating system. Next, you can use a simple terminal command to create a new Assegai project. For example, to create a new Assegai application in a directory named "example-app", you may run the following command in your terminal:
 
-`$ composer install -g @assegai/cli`
+`$ composer require assegaiphp/assegai-cli`
 
 ## Usage
 
