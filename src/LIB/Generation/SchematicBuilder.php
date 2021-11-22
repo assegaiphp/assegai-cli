@@ -103,7 +103,9 @@ final class SchematicBuilder
       $path = "$featureName/$path";
     }
 
-    $tableName = $featureName ?? prompt('Which database table does the entity represent');
+    $defaultTableName = !empty($featureName) ? null : pascalToSnake(basename($path));
+
+    $tableName = $featureName ?? prompt('Which database table does the entity represent', defaultValue: $defaultTableName);
 
     $templatePath = $this->templateDirectory() . "/Entity.Template.php";
     $modulesDirectory = $this->modulesDirectory();
@@ -120,8 +122,9 @@ final class SchematicBuilder
       Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
     }
     $content = file_get_contents($templatePath);
-    $content = str_replace('/', '\\', str_replace('ModuleName', $path, $content));
-    $content = str_replace('TableName', strtolower($tableName), $content);
+    $content = str_replace('/', '\\', str_replace('ModuleName', dirname($path), $content));
+    $content = str_replace('/', '\\', str_replace('ClassName', basename($path), $content));
+    $content = str_replace('TableName', pascalToSnake($tableName), $content);
 
     $filesize = file_put_contents(filename: $targetFile, data: $content);
 
@@ -285,7 +288,7 @@ final class SchematicBuilder
     }
     $content = file_get_contents($templatePath);
     $content = str_replace('ModuleName', $name, $content);
-    $content = str_replace('TableName', strtolower($name), $content);
+    $content = str_replace('TableName', pascalToSnake($name), $content);
 
     $filesize = file_put_contents(filename: $targetFile, data: $content);
 
