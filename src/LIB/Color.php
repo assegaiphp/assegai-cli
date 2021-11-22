@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB;
+namespace Assegai\CLI\LIB;
 
 final class Color
 {

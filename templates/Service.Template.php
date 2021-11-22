@@ -1,9 +1,9 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace Assegai\CLI\Modules\ModuleName;
 
-use Assegai\Core\Attributes\Injectable;
-use Assegai\Core\BaseCrudService;
+use Assegai\CLI\Core\Attributes\Injectable;
+use Assegai\CLI\Core\BaseCrudService;
 
 #[Injectable]
 class ModuleNameService extends BaseCrudService

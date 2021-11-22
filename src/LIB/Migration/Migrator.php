@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB\Migration;
+namespace Assegai\CLI\LIB\Migration;
 
-use Assegai\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Logging\Logger;
 use PDO;
 use PDOException;
 

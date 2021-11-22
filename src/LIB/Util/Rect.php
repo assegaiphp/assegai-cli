@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-namespace Assegai\LIB\Util;
+namespace Assegai\CLI\LIB\Util;
 
 final class Rect
 {

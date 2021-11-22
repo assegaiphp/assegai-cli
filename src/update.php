@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use Assegai\LIB\Color;
-use Assegai\LIB\Logging\Logger;
-use Assegai\LIB\TextStyle;
+use Assegai\CLI\LIB\Color;
+use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\TextStyle;
 
 require_once 'bootstrap.php';
 

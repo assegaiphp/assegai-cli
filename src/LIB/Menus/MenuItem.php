@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB\Menus;
+namespace Assegai\CLI\LIB\Menus;
 
-use Assegai\LIB\Color;
+use Assegai\CLI\LIB\Color;
 
 class MenuItem
 {

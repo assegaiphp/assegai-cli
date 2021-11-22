@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB\Logging;
+namespace Assegai\CLI\LIB\Logging;
 
-use Assegai\LIB\Color;
-use Assegai\LIB\Logging\Log;
+use Assegai\CLI\LIB\Color;
+use Assegai\CLI\LIB\Logging\Log;
 
 final class Logger
 {

@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB;
+namespace Assegai\CLI\LIB;
 
-use Assegai\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Logging\Logger;
 
 final class WorkspaceManager
 {
@@ -86,7 +86,7 @@ final class WorkspaceManager
     global $workingDirectory;
     $routesFilePath = sprintf("%s/app/routes.php", $workingDirectory);
     $routesFilePathRelative = str_replace($workingDirectory, '', $routesFilePath);
-    $namespace = "use Assegai\\Modules\\${moduleName}\\${moduleName}Module;";
+    $namespace = "use Assegai\CLI\\Modules\\${moduleName}\\${moduleName}Module;";
     $path = strtolower($moduleName);
     $class = "${moduleName}Module::class";
     $route = "  new Route(path: '${path}', module: ${class}),";

@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\Commands\Migration;
+namespace Assegai\CLI\Commands\Migration;
 
-use Assegai\LIB\DatabaseSelector;
-use Assegai\LIB\Migration\Migrator;
+use Assegai\CLI\LIB\DatabaseSelector;
+use Assegai\CLI\LIB\Migration\Migrator;
 
 list($type, $name) = match (count($args)) {
   1       => [null, null],

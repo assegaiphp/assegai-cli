@@ -1,11 +1,11 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB;
+namespace Assegai\CLI\LIB;
 
-use Assegai\LIB\Logging\Logger;
-use Assegai\LIB\Menus\Menu;
-use Assegai\LIB\Menus\MenuItem;
+use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Menus\Menu;
+use Assegai\CLI\LIB\Menus\MenuItem;
 use PDO;
 use PDOException;
 

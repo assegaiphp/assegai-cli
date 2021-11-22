@@ -1,11 +1,11 @@
 #!/usr/bin/env php
 <?php
 
-namespace Assegai\LIB\Generation;
+namespace Assegai\CLI\LIB\Generation;
 
-use Assegai\LIB\Color;
-use Assegai\LIB\Logging\Logger;
-use Assegai\LIB\WorkspaceManager;
+use Assegai\CLI\LIB\Color;
+use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\WorkspaceManager;
 
 final class SchematicBuilder
 {

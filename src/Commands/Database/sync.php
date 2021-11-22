@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\Commands\Database;
+namespace Assegai\CLI\Commands\Database;
 
-use Assegai\LIB\Color;
-use Assegai\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Color;
+use Assegai\CLI\LIB\Logging\Logger;
 
 $sourcePath         = sprintf("%s/app/src", $workingDirectory);
 $modulesDir         = sprintf("%s/Modules", $sourcePath);
@@ -43,8 +43,8 @@ if (count($moduleNames) < 3)
 
 $moduleNames = array_slice($moduleNames, 2);
 
-use Assegai\Database\Schema;
-use Assegai\Database\SchemaOptions;
+use Assegai\CLI\Database\Schema;
+use Assegai\CLI\Database\SchemaOptions;
 
 foreach($moduleNames as $moduleName)
 {

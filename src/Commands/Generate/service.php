@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-namespace Assegai\Commands\Generate;
+namespace Assegai\CLI\Commands\Generate;
 
-use Assegai\LIB\Generation\SchematicBuilder;
+use Assegai\CLI\LIB\Generation\SchematicBuilder;
 
 list($name) = match (count($args)) {
   1 => [null],

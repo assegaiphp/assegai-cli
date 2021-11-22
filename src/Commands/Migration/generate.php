@@ -1,11 +1,11 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\Commands\Migration;
+namespace Assegai\CLI\Commands\Migration;
 
-use Assegai\LIB\Color;
-use Assegai\LIB\DatabaseSelector;
-use Assegai\LIB\Migration\Migrator;
+use Assegai\CLI\LIB\Color;
+use Assegai\CLI\LIB\DatabaseSelector;
+use Assegai\CLI\LIB\Migration\Migrator;
 
 function readLine(string $message = '$'): string
 {

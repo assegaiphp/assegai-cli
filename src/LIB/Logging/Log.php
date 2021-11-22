@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB\Logging;
+namespace Assegai\CLI\LIB\Logging;
 
 use DateTime;
 

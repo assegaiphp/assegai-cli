@@ -1,11 +1,11 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai;
+namespace Assegai\CLI;
 
-use Assegai\LIB\Menus\Menu;
-use Assegai\LIB\Menus\MenuItem;
-use Assegai\LIB\Menus\MenuOptions;
+use Assegai\CLI\LIB\Menus\Menu;
+use Assegai\CLI\LIB\Menus\MenuItem;
+use Assegai\CLI\LIB\Menus\MenuOptions;
 
 require_once 'bootstrap.php';
 

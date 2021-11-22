@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\Commands\Database;
+namespace Assegai\CLI\Commands\Database;
 
-use Assegai\LIB\DatabaseSelector;
-use Assegai\LIB\Logging\Logger;
+use Assegai\CLI\LIB\DatabaseSelector;
+use Assegai\CLI\LIB\Logging\Logger;
 
 list($type, $name) = match (count($args)) {
   1       => [null, null],

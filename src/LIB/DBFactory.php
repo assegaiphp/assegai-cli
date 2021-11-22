@@ -1,8 +1,8 @@
 <?php
 
-namespace Assegai\LIB;
+namespace Assegai\CLI\LIB;
 
-use Assegai\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Logging\Logger;
 use Exception;
 use PDO;
 

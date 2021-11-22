@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-use Assegai\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Logging\Logger;
 
 require_once 'bootstrap.php';
 

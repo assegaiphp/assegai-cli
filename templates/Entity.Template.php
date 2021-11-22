@@ -1,9 +1,9 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace Assegai\CLI\Modules\ModuleName;
 
-use Assegai\Database\Attributes\Entity;
-use Assegai\Database\BaseEntity;
+use Assegai\CLI\Database\Attributes\Entity;
+use Assegai\CLI\Database\BaseEntity;
 
 #[Entity(tableName: 'TableName')]
 class ClassNameEntity extends BaseEntity

@@ -1,4 +1,4 @@
 #!/usr/bin/env php
 <?php
 
-namespace Assegai\Commands\Generate;
+namespace Assegai\CLI\Commands\Generate;

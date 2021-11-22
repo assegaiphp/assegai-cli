@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-namespace Assegai\LIB\Util;
+namespace Assegai\CLI\LIB\Util;
 
-use Assegai\LIB\Color;
+use Assegai\CLI\LIB\Color;
 
 final class Console
 {

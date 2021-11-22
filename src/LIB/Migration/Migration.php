@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-namespace Assegai\LIB\Migration;
+namespace Assegai\CLI\LIB\Migration;
 
 use JetBrains\PhpStorm\Pure;
 

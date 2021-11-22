@@ -1,10 +1,10 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace Assegai\CLI\Modules\ModuleName;
 
-use Assegai\Core\Attributes\Injectable;
-use Assegai\Database\Attributes\Repository;
-use Assegai\Database\BaseRepository;
+use Assegai\CLI\Core\Attributes\Injectable;
+use Assegai\CLI\Database\Attributes\Repository;
+use Assegai\CLI\Database\BaseRepository;
 
 #[Repository(
   entity: '',

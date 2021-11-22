@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Assegai\LIB\Color;
+use Assegai\CLI\LIB\Color;
 
 require_once 'bootstrap.php';
 
