@@ -1,6 +1,13 @@
 #!/usr/bin/php
 <?php
 
+use Assegai\CLI\LIB\Color;
+use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Menus\Menu;
+use Assegai\CLI\LIB\Menus\MenuItem;
+use Assegai\CLI\LIB\Menus\MenuOptions;
+use Assegai\CLI\LIB\WorkspaceManager;
+
 $args = array_slice($argv, 1);
 $workingDirectory = exec(command: 'pwd');
 $assegaiPath = exec(command: "which assegai");
@@ -14,20 +21,13 @@ if (!empty($assegaiPath))
 spl_autoload_register(function ($class) {
   global $assegaiPath;
   $filename = str_replace('\\', DIRECTORY_SEPARATOR, $assegaiPath . "\\$class") . '.php';
-  $filename = str_replace('Assegai\\CLI', 'src', $filename);
+  $filename = str_replace('Assegai' . DIRECTORY_SEPARATOR . 'CLI', 'src', $filename);
 
   if (file_exists($filename))
   {
     require_once  $filename;
   }
 });
-
-use Assegai\CLI\LIB\Color;
-use Assegai\CLI\LIB\Logging\Logger;
-use Assegai\CLI\LIB\Menus\Menu;
-use Assegai\CLI\LIB\Menus\MenuItem;
-use Assegai\CLI\LIB\Menus\MenuOptions;
-use Assegai\CLI\LIB\WorkspaceManager;
 
 /**
  * Checks the `workding directory` for an `assegai.json` file. If no 
