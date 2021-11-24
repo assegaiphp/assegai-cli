@@ -144,26 +144,20 @@ final class SchematicBuilder
     }
     $this->buildModule(name: $name);
     
-    usleep(1200000);
     $this->buildController(name: $name);
     
-    usleep(1200000);
     $this->buildService(name: $name);
     
-    usleep(1200000);
-    $choice = prompt(message: 'Would you like to generate a repository', defaultValue: 'Y');
-
-    if (in_array(strtolower($choice), ['y', 'yes', 'yeah']))
+    echo "\n";
+    if (confirm(message: "Would you like to generate a repository"))
     {
       $this->buildRepository(name: $name);
     }
     
-    usleep(1200000);
-    $choice = prompt(message: 'Would you like to generate an entity', defaultValue: 'Y');
-    
-    if (in_array(strtolower(trim($choice)), ['y', 'yes', 'yeah']))
+    echo "\n";
+    if (confirm(message: "Would you like to generate an entity"))
     {
-      $entityName = prompt(message: 'Entity name', attempts: 3);
+      $entityName = prompt(message: 'What would you like to call the Entity', attempts: 3);
       $this->buildEntity(path: $entityName, featureName: $name);
     }
   }
