@@ -1,16 +1,16 @@
 <?php
 
-namespace Assegai\CLI\Modules\ModuleName;
+namespace Assegai\Modules\ModuleName;
 
-use Assegai\CLI\Core\Attributes\Controller;
-use Assegai\CLI\Core\Attributes\Delete;
-use Assegai\CLI\Core\BaseController;
-use Assegai\CLI\Core\Responses\Response;
-use Assegai\CLI\Core\Attributes\Get;
-use Assegai\CLI\Core\Attributes\Patch;
-use Assegai\CLI\Core\Attributes\Post;
-use Assegai\CLI\Core\Attributes\Put;
-use Assegai\CLI\Database\Interfaces\IEntity;
+use Assegai\Core\Attributes\Controller;
+use Assegai\Core\Attributes\Delete;
+use Assegai\Core\BaseController;
+use Assegai\Core\Responses\Response;
+use Assegai\Core\Attributes\Get;
+use Assegai\Core\Attributes\Patch;
+use Assegai\Core\Attributes\Post;
+use Assegai\Core\Attributes\Put;
+use Assegai\Database\Interfaces\IEntity;
 use stdClass;
 
 #[Controller(path: 'PathName')]

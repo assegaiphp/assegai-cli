@@ -1,9 +1,9 @@
 <?php
 
-namespace Assegai\CLI\Modules\ModuleName;
+namespace Assegai\Modules\ModuleName;
 
-use Assegai\CLI\Core\BaseModule;
-use Assegai\CLI\Core\Attributes\Module;
+use Assegai\Core\BaseModule;
+use Assegai\Core\Attributes\Module;
 
 #[Module(
   controllers: [],
