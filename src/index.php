@@ -8,7 +8,7 @@ require_once 'bootstrap.php';
 list($command, $requiredArg, $optionalArg, $option) = match (count($args)) {
   1       => [$args[0], null,     null,     null],
   2       => [$args[0], $args[1], null,     null],
-  3       => [$args[0], $args[1], $arg[2],  null],
+  3       => [$args[0], $args[1], $args[2],  null],
   default => $args
 };
 
@@ -23,6 +23,8 @@ else if (in_array($requiredArg, ['--help', '-h']))
 }
 else
 {
+  $command = $mainMenu->getItemValue(valueOrAlias: $command);
+
   if (!file_exists("$assegaiPath/src/$command.php"))
   {
     Logger::error(message: "Unknown command $command", terminateAfterLog: true);
