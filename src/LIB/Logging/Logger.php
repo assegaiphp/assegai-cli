@@ -63,7 +63,7 @@ final class Logger
       default             => Color::YELLOW
     };
 
-    $bytes = bytes_format(bytes: $filesize);
+    $bytes = bytesFormat(bytes: $filesize);
     $suffix = is_null($filesize) ? '' : " ($bytes)";
 
     printf("%s%s%s %s%s\n", $colorCode, $action, Color::RESET, $path, $suffix);
