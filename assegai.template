@@ -1,9 +1,13 @@
 {
   "name": "",
   "description": "",
-  "version": 1,
+  "version": "0.0.0",
   "projectType": "application",
   "root": "",
   "sourceRoot": "src",
-  "prefix": "app"
+  "prefix": "app",
+  "scripts": {
+    "serve": "php -S localhost:8000",
+    "test": "./vendor/bin/phpunit --testdox"
+  }
 }
