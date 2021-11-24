@@ -6,11 +6,15 @@ use Assegai\CLI\LIB\Logging\Logger;
 use Assegai\CLI\LIB\Menus\Menu;
 use Assegai\CLI\LIB\Menus\MenuItem;
 use Assegai\CLI\LIB\Menus\MenuOptions;
+use Assegai\CLI\LIB\Util\Console;
 use Assegai\CLI\LIB\WorkspaceManager;
 
 $args = array_slice($argv, 1);
 $workingDirectory = exec(command: 'pwd');
 $assegaiPath = exec(command: "which assegai");
+$assegaiConfig = "$workingDirectory/assegai.json";
+
+
 
 if (!empty($assegaiPath))
 {
@@ -103,22 +107,55 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   return $line;
 }
 
-function confirm(string $message, ?int $attempts = null, ): bool
+function confirm(string $message, bool $defaultYes = true): bool
 {
-  return false;
+  $suffix = $defaultYes ? 'Y/n' : 'y/N';
+  $response = $defaultYes ? true : false;
+  $defaultHint = Color::DARK_WHITE . "($suffix) " . Color::RESET;
+
+  $line = '';
+
+  printf("%s?%s %s: %s%s", Color::GREEN, Color::RESET, $message, $defaultHint, Color::LIGHT_BLUE);
+  $line = trim(fgets(STDIN));
+
+  if (!empty($line))
+  {
+    $response = match(strtolower($line)) {
+      'yes',
+      'y',
+      'yeah',
+      'yep',
+      'correct',
+      'true',
+      'affirmative' => true,
+      default       => false
+    };
+  }
+  if ($response === $defaultYes)
+  {
+    Console::cursor()::moveUpBy(numberOfLines: 1);
+    Console::eraser()::entireLine();
+    $suffix = $defaultYes ? 'Y' : 'N';
+    $defaultHint = Color::LIGHT_BLUE . "$suffix " . Color::RESET;
+    printf("\r%s?%s %s: %s%s\n", Color::GREEN, Color::RESET, $message, $defaultHint, Color::LIGHT_BLUE);
+  }
+  echo Color::RESET;
+
+  return $response;
 }
 
-function bytes_format(?int $bytes): string
+function bytesFormat(?int $bytes): string
 {
   if (is_null($bytes))
   {
     $bytes = 0;
   }
   return match (true) {
-    $bytes < 1024 => "$bytes bytes",
-    $bytes < 1048576 => number_format($bytes / 1024, 2) . " MB",
-    $bytes < 1073741824 => number_format($bytes / 1048576, 2) . " GB",
-    default => "$bytes bytes"
+    $bytes < 1024 => "$bytes Bytes",
+    $bytes < 1048576 => number_format($bytes / 1024, 2) . " KB",
+    $bytes < 1073741824 => number_format($bytes / 1048576, 2) . " MB",
+    $bytes < 1099511627776 => number_format($bytes / 1048576, 2) . " GB",
+    default => "$bytes Bytes"
   };
 }
 
@@ -161,6 +198,12 @@ function jsonPrettify(string $json): string
   }
 
   return $output;
+}
+
+function isJson(string $json): bool
+{
+  json_decode($json);
+  return json_last_error() === JSON_ERROR_NONE;
 }
 
 function clamp(int|float $value, int|float $min, int|float $max): int|float
@@ -264,6 +307,7 @@ $mainMenu->addRange([
   new MenuItem(value: 'lint', description: 'Runs the code linter.'),
   new MenuItem(value: 'migration', description: 'Manages database migrations.'),
   new MenuItem(value: 'new', description: 'Generates a new Assegai application.'),
+  new MenuItem(value: 'serve', alias: 't', description: 'Builds and serves your app, rebuilding on file changes.'),
   new MenuItem(value: 'test', alias: 't', description: 'Runs unit tests in a project.'),
   new MenuItem(value: 'update', alias: 'u', description: 'Updates your application and its dependencies. See https://update.assegai.ml/'),
   new MenuItem(value: 'version', alias: 'v', description: 'Outputs Assegai CLI version.'),
