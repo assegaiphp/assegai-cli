@@ -169,36 +169,55 @@ class Menu
     return trim("${description}${titleColorCode}" . $this->title . "\e[0m\n$itemsOutput") . "\n";
   }
 
-  public function prompt(string $message = 'Choose option'): ?MenuItem
+  public function prompt(string $message = 'Choose option', bool $useKeypad = false): ?MenuItem
   {
-    $inputColorCode = $this->getColorCode(color: 'blue');
-    printf("%s\n%s:$inputColorCode ", $this, $message);
-    $attemptsLeft = 4;
-    $isValidChoice = false;
-    $colorCode = $this->getColorCode(color: 'magenta');
+    global $assegaiPath;
 
-    do
+    if ($useKeypad)
     {
-      $choice = trim(fgets(STDIN));
-      --$attemptsLeft;
-      $isValidChoice = isset($this->items[$choice]);
+      $options = [$this->title()];
 
-      if ($isValidChoice)
+      foreach ($this->items as $item)
       {
-        $this->selected = $this->items[$choice];
+        $options[] = $item->value();
       }
-      else
-      {
-        if ($attemptsLeft <= 0)
-        {
-          $colorCode = $this->getColorCode(color: 'red');
-          exit("\n${colorCode}Program terminating...\e[0m\n");
-        }
-        echo "\n${colorCode}Invalid choice. Try again!\n$attemptsLeft attempts left...\e[0m\n\n$message: $inputColorCode";
-      }
+
+      $response = promptSelect(options: $options, message: $message);
+
+      $this->selected = $this->items[$response];
     }
-    while(!$isValidChoice);
-    echo "\e[0m";
+    else
+    {
+      $inputColorCode = $this->getColorCode(color: 'blue');
+      printf("%s\n%s:$inputColorCode ", $this, $message);
+      $attemptsLeft = 4;
+      $isValidChoice = false;
+      $colorCode = $this->getColorCode(color: 'magenta');
+  
+      do
+      {
+        $choice = trim(fgets(STDIN));
+        --$attemptsLeft;
+        $isValidChoice = isset($this->items[$choice]);
+  
+        if ($isValidChoice)
+        {
+          $this->selected = $this->items[$choice];
+        }
+        else
+        {
+          if ($attemptsLeft <= 0)
+          {
+            $colorCode = $this->getColorCode(color: 'red');
+            exit("\n${colorCode}Program terminating...\e[0m\n");
+          }
+          echo "\n${colorCode}Invalid choice. Try again!\n$attemptsLeft attempts left...\e[0m\n\n$message: $inputColorCode";
+        }
+      }
+      while(!$isValidChoice);
+    }
+
+    echo Color::RESET;
 
     return $this->selected();
   }

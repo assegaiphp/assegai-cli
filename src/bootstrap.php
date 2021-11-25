@@ -144,6 +144,24 @@ function confirm(string $message, bool $defaultYes = true): bool
   return $response;
 }
 
+function promptSelect(array $options, ?string $message = null): string
+{
+  global $assegaiPath;
+
+  $arguments = '';
+  foreach ($options as $option)
+  {
+    $arguments .= "\"$option\" ";
+  }
+  $arguments = trim($arguments);
+
+  if (!empty($message))
+  {
+    printf("%s?%s %s:\n", Color::GREEN, Color::RESET, $message);
+  }
+  return system("$assegaiPath/bin/menu_selector $arguments");
+}
+
 function bytesFormat(?int $bytes): string
 {
   if (is_null($bytes))
@@ -307,7 +325,7 @@ $mainMenu->addRange([
   new MenuItem(value: 'lint', description: 'Runs the code linter.'),
   new MenuItem(value: 'migration', description: 'Manages database migrations.'),
   new MenuItem(value: 'new', description: 'Generates a new Assegai application.'),
-  new MenuItem(value: 'serve', alias: 't', description: 'Builds and serves your app, rebuilding on file changes.'),
+  new MenuItem(value: 'serve', description: 'Starts a local development server.'),
   new MenuItem(value: 'test', alias: 't', description: 'Runs unit tests in a project.'),
   new MenuItem(value: 'update', alias: 'u', description: 'Updates your application and its dependencies. See https://update.assegai.ml/'),
   new MenuItem(value: 'version', alias: 'v', description: 'Outputs Assegai CLI version.'),
