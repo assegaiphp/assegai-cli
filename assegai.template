@@ -7,7 +7,12 @@
   "sourceRoot": "src",
   "prefix": "app",
   "scripts": {
-    "serve": "php -S localhost:8000",
     "test": "./vendor/bin/phpunit --testdox"
+  },
+  "development": {
+    "server": {
+      "host": "localhost",
+      "port": 5000
+    }
   }
 }
