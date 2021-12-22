@@ -5,12 +5,11 @@ use Assegai\CLI\LIB\Menus\Menu;
 use Assegai\CLI\LIB\Menus\MenuItem;
 use Assegai\CLI\LIB\Menus\MenuOptions;
 
-require_once 'bootstrap.php';
-
 $commandsMenu = new Menu(
   title: 'Database Commands:',
   items: [
-    new MenuItem(value: 'reset', description: 'Drops the database specified in your config if it can, and then runs assegai database setup'),
+    new MenuItem(value: 'list', description: 'List all configured databases of a given type'),
+    new MenuItem(value: 'reset', description: 'Drops the database specified in your config if it can, and then runs assegai database setup.'),
     new MenuItem(value: 'setup', description: 'Creates and/or initializes a database.'),
     new MenuItem(value: 'sync', description: 'Sync the database with module entity schemas.'),
   ],
@@ -30,6 +29,7 @@ function help()
   global $commandsMenu, $optionsMenu;
   printf("%s\n%s\n", $commandsMenu, $optionsMenu);
 }
+array_shift($args);
 
 if (empty($args))
 {
