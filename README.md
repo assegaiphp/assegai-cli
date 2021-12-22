@@ -1,7 +1,7 @@
 # Assegai CLI
 
 ## Requirements
-- PHP 8.0 (minimum)
+- PHP 8.1 (minimum)
 
 ## Description
 
