@@ -50,6 +50,8 @@ function help(?string $command = null)
   }
 }
 
+array_shift($args);
+
 if (empty($args))
 {
   help();
