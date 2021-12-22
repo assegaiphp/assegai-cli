@@ -86,7 +86,7 @@ final class WorkspaceManager
     global $workingDirectory;
     $routesFilePath = sprintf("%s/app/routes.php", $workingDirectory);
     $routesFilePathRelative = str_replace($workingDirectory, '', $routesFilePath);
-    $namespace = "use Assegai\CLI\\Modules\\${moduleName}\\${moduleName}Module;";
+    $namespace = "use Assegai\\Modules\\${moduleName}\\${moduleName}Module;";
     $path = strtolower($moduleName);
     $class = "${moduleName}Module::class";
     $route = "  new Route(path: '${path}', module: ${class}),";
@@ -147,7 +147,7 @@ final class WorkspaceManager
 
     if (empty($output))
     {
-      exit;
+      return;
     }
 
     foreach ($output as $line)
