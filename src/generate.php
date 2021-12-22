@@ -1,11 +1,10 @@
 #!/usr/bin/php
 <?php
 
+use Assegai\CLI\LIB\Logging\Logger;
 use Assegai\CLI\LIB\Menus\Menu;
 use Assegai\CLI\LIB\Menus\MenuItem;
 use Assegai\CLI\LIB\Menus\MenuOptions;
-
-require_once 'bootstrap.php';
 
 checkWorkspace(commandName: 'generate');
 
@@ -45,6 +44,7 @@ if (empty($args))
 }
 else
 {
+  array_shift($args);
   list($command) = $args;
 
   $command = match ($command) {
@@ -69,7 +69,15 @@ else
     else
     {
       $filename = strtolower($command) . '.php';
-      require_once "Commands/Generate/$filename";
+      $filename = "$assegaiPath/src/Commands/Generate/$filename";
+      
+      if (!file_exists($filename))
+      {
+        $filename = str_replace("$assegaiPath/src/", '', $filename);
+        Logger::error("Missing file definition: $filename");
+      }
+
+      require_once $filename;
     }
   }
   else
