@@ -6,6 +6,7 @@ use Assegai\CLI\LIB\Logging\Logger;
 require_once 'bootstrap.php';
 
 list($command, $requiredArg, $optionalArg, $option) = match (count($args)) {
+  0       => [null,     null,     null,     null],
   1       => [$args[0], null,     null,     null],
   2       => [$args[0], $args[1], null,     null],
   3       => [$args[0], $args[1], $args[2],  null],
@@ -24,7 +25,7 @@ else if (in_array($requiredArg, ['--help', '-h']))
 else
 {
   $command = $mainMenu->getItemValue(valueOrAlias: $command);
-
+  
   if (!file_exists("$assegaiPath/src/$command.php"))
   {
     Logger::error(message: "Unknown command $command", terminateAfterLog: true);
