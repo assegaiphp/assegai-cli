@@ -67,7 +67,7 @@ if (!file_exists($initialMigrationDir . '/down.sql'))
 
 # 2. Create migrations table
 $migrationsTableSchema = "CREATE TABLE IF NOT EXISTS `$selectedDatabaseName`.`__assegai_schema_migrations` (
-  `migration` VARCHAR(14) NOT NULL ,
+  `migration` VARCHAR(50) NOT NULL ,
   `ran_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   PRIMARY KEY (`migration`)) ENGINE = InnoDB";
 
