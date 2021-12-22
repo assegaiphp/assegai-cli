@@ -3,7 +3,7 @@
 
 namespace Assegai\CLI\LIB;
 
-final class Color
+enum Color
 {
   const BLACK         = "\e[0;30m";
   const RED           = "\e[0;31m";
