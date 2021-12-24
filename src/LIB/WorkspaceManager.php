@@ -159,7 +159,7 @@ final class WorkspaceManager
 
     if ($bytes === false)
     {
-      Logger::error("Could not update $routesFilePathRelative", terminateAfterLog: true);
+      Logger::error("Could not update $routesFilePathRelative", exit: true);
     }
 
     Logger::logUpdate(sprintf("%s (%d bytes)", $routesFilePathRelative, $bytes));

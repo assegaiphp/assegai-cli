@@ -30,7 +30,7 @@ if (!file_exists($projectPath))
 {
   if (!mkdir(directory: $projectPath, recursive: true))
   {
-    Logger::error("Couldn't not create project directory: ${projectName}", terminateAfterLog: true);
+    Logger::error("Couldn't not create project directory: ${projectName}", exit: true);
   }
 
   Logger::logCreate("$projectName");
@@ -55,7 +55,7 @@ $lastLine = array_shift($execOutput);
 if (str_starts_with($lastLine, 'fatal: '))
 {
   error_log(message: $cloneResult);
-  Logger::error(message: "Failed to download the package files. Check the logs for more info.\n", terminateAfterLog: true);
+  Logger::error(message: "Failed to download the package files. Check the logs for more info.\n", exit: true);
 }
 
 printf(

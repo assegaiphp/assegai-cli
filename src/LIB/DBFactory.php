@@ -162,7 +162,7 @@ final class DBFactory
 
     if (!isset($name))
     {
-      Logger::error("Missing name", terminateAfterLog: true);
+      Logger::error("Missing name", exit: true);
     }
 
     try

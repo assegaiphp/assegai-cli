@@ -14,19 +14,19 @@ final class Config
 
     if (!file_exists($assegaiConfig))
     {
-      Logger::error(message: "Missing config file!", terminateAfterLog: true);
+      Logger::error(message: "Missing config file!", exit: true);
     }
 
     $configFileContent = file_get_contents($assegaiConfig);
 
     if (empty($configFileContent))
     {
-      Logger::error(message: "Empty config file!", terminateAfterLog: true);
+      Logger::error(message: "Empty config file!", exit: true);
     }
 
     if (!str_starts_with($configFileContent, "{") && !str_starts_with($configFileContent, "["))
     {
-      Logger::error(message: "Invalid config file", terminateAfterLog: true);
+      Logger::error(message: "Invalid config file", exit: true);
     }
 
     $config = json_decode($configFileContent);

@@ -11,7 +11,7 @@ $configPath = "$workingDirectory/assegai.json";
 
 if (!file_exists($configPath))
 {
-  Logger::error(message: 'Missing config file!', terminateAfterLog: true);
+  Logger::error(message: 'Missing config file!', exit: true);
 }
 
 $config = file_get_contents($configPath);

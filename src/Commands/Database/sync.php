@@ -31,14 +31,14 @@ spl_autoload_register(function ($class) {
 
 if (!file_exists($modulesDir))
 {
-  Logger::error(message: 'Modules directory not found.', terminateAfterLog: true);
+  Logger::error(message: 'Modules directory not found.', exit: true);
 }
 
 $moduleNames = scandir(directory: $modulesDir);
 
 if (count($moduleNames) < 3)
 {
-  Logger::log('Nothing to do', terminateAfterLog: true);
+  Logger::log('Nothing to do', exit: true);
 }
 
 $moduleNames = array_slice($moduleNames, 2);

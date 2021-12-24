@@ -28,7 +28,7 @@ else
   
   if (!file_exists("$assegaiPath/src/$command.php"))
   {
-    Logger::error(message: "Unknown command $command", terminateAfterLog: true);
+    Logger::error(message: "Unknown command $command", exit: true);
   }
 
   require_once "$assegaiPath/src/$command.php";

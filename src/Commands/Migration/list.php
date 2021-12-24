@@ -31,7 +31,7 @@ $migrations = $migrator->listMigrations();
 
 if ($migrations === false)
 {
-  Logger::error(message: "Nothing to do\n", terminateAfterLog: true);
+  Logger::error(message: "Nothing to do\n", exit: true);
 }
 
 $titleColor = Color::YELLOW;

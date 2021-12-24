@@ -46,7 +46,7 @@ final class DatabaseSelector
 
     if (!file_exists(self::CONFIG_FILE_PATH))
     {
-      Logger::error("Missing file: " . self::CONFIG_FILE_PATH, terminateAfterLog: true);
+      Logger::error("Missing file: " . self::CONFIG_FILE_PATH, exit: true);
     }
 
     $this->config = require(self::CONFIG_FILE_PATH);
@@ -62,7 +62,7 @@ final class DatabaseSelector
 
     if (!isset($this->config['databases']))
     {
-      Logger::error("Invalid config: 'databases' is not defined.", terminateAfterLog: true);
+      Logger::error("Invalid config: 'databases' is not defined.", exit: true);
     }
 
     # 1. Select Database Type
@@ -79,7 +79,7 @@ final class DatabaseSelector
   
       if (is_null($choice))
       {
-        Logger::error('Invalid choice', terminateAfterLog: true);
+        Logger::error('Invalid choice', exit: true);
       }
   
       if ($this->isQuitRequest(input: $choice->value()))
@@ -123,12 +123,12 @@ final class DatabaseSelector
     # 3. Establish Database connection
     if (!isset($this->config['databases'][$this->databaseType()]))
     {
-      Logger::error('Unknown database type: ' . $this->databaseType(), terminateAfterLog: true);
+      Logger::error('Unknown database type: ' . $this->databaseType(), exit: true);
     }
 
     if (!isset($this->config['databases'][$this->databaseType()][$this->databaseName()]))
     {
-      Logger::error('Unknown database name: ' . $this->databaseName(), terminateAfterLog: true);
+      Logger::error('Unknown database name: ' . $this->databaseName(), exit: true);
     }
 
     $this->config = $this->config['databases'][$this->databaseType()][$this->databaseName()];
@@ -156,7 +156,7 @@ final class DatabaseSelector
 
             if ($answer === 'no')
             {
-              Logger::warn('Database not defined. Terminating program.', terminateAfterLog: true);
+              Logger::warn('Database not defined. Terminating program.', exit: true);
             }
             else
             {
@@ -166,14 +166,14 @@ final class DatabaseSelector
 
                 if ($statement === false)
                 {
-                  Logger::error(implode("\n", $this->connection()->errorInfo()), terminateAfterLog: true);
+                  Logger::error(implode("\n", $this->connection()->errorInfo()), exit: true);
                 }
 
                 Logger::logCreate($this->databaseName() . ' database');
               }
               catch(PDOException $e)
               {
-                Logger::error($e->getMessage(), terminateAfterLog: true);
+                Logger::error($e->getMessage(), exit: true);
               }
             }
             break;

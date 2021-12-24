@@ -52,7 +52,7 @@ final class Migrator
     {
       if (!mkdir(directory: $dirname, recursive: true))
       {
-        Logger::error(message: "Failed to create $dirname", terminateAfterLog: true);
+        Logger::error(message: "Failed to create $dirname", exit: true);
       }
 
       Logger::logCreate(path: $dirname);
@@ -62,7 +62,7 @@ final class Migrator
     {
       if (!fopen(filename: $upFilename, mode: 'w'))
       {
-        Logger::error(message: "Failed to create $upFilename", terminateAfterLog: true);
+        Logger::error(message: "Failed to create $upFilename", exit: true);
       }
 
       Logger::logCreate(path: $upFilename);
@@ -72,7 +72,7 @@ final class Migrator
     {
       if (!fopen(filename: $downFilename, mode: 'w'))
       {
-        Logger::error(message: "Failed to create $downFilename", terminateAfterLog: true);
+        Logger::error(message: "Failed to create $downFilename", exit: true);
       }
 
       Logger::logCreate(path: $downFilename);
@@ -98,7 +98,7 @@ final class Migrator
 
           if ($statement === false)
           {
-            Logger::error(message: sprintf("Failed to run %s", $migration->name()), terminateAfterLog: true);
+            Logger::error(message: sprintf("Failed to run %s", $migration->name()), exit: true);
           }
 
           $ranMigrations[$migration->value()] = $migration;
@@ -109,7 +109,7 @@ final class Migrator
           $recordStatement = $this->connection->query($recordStatement);
           if ($statement === false)
           {
-            Logger::error(message: implode("\n", $this->connection->errorInfo()), terminateAfterLog: true);
+            Logger::error(message: implode("\n", $this->connection->errorInfo()), exit: true);
           }
 
           ++$runCount;
@@ -123,13 +123,13 @@ final class Migrator
 
       if (empty($ranMigrations))
       {
-        Logger::log(message: 'Nothing to do', terminateAfterLog: true);
+        Logger::log(message: 'Nothing to do', exit: true);
       }
       Logger::logUpdate(path: '__assegai_schema_migrations');
     }
     catch(PDOException $e)
     {
-      Logger::error($e->getMessage(), terminateAfterLog: true);
+      Logger::error($e->getMessage(), exit: true);
     }
   }
 
@@ -153,7 +153,7 @@ final class Migrator
 
           if ($statement === false)
           {
-            Logger::error(message: sprintf("Failed to revert %s", $migration->name()), terminateAfterLog: true);
+            Logger::error(message: sprintf("Failed to revert %s", $migration->name()), exit: true);
           }
 
           $revertedMigrations[$migration->value()] = $migration;
@@ -164,7 +164,7 @@ final class Migrator
           $recordStatement = $this->connection->query($recordStatement);
           if ($statement === false)
           {
-            Logger::error(message: implode("\n", $this->connection->errorInfo()), terminateAfterLog: true);
+            Logger::error(message: implode("\n", $this->connection->errorInfo()), exit: true);
           }
 
           ++$reversionCount;
@@ -178,13 +178,13 @@ final class Migrator
 
       if (empty($revertedMigrations))
       {
-        Logger::log(message: 'Nothing to do', terminateAfterLog: true);
+        Logger::log(message: 'Nothing to do', exit: true);
       }
       Logger::logUpdate(path: '__assegai_schema_migrations');
     }
     catch(PDOException $e)
     {
-      Logger::error($e->getMessage(), terminateAfterLog: true);
+      Logger::error($e->getMessage(), exit: true);
     }
   }
 
@@ -234,7 +234,7 @@ final class Migrator
 
     if ($result === false)
     {
-      Logger::error(implode("\n", $this->connection->errorInfo()), terminateAfterLog: true);
+      Logger::error(implode("\n", $this->connection->errorInfo()), exit: true);
     }
 
     return $result->fetchAll(mode: PDO::FETCH_ASSOC);

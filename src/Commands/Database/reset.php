@@ -30,7 +30,7 @@ try
 
   if ($statement === false)
   {
-    Logger::error(message: sprintf("Couldn't DROP database `%s`", $selectedDatabaseName), terminateAfterLog: true);
+    Logger::error(message: sprintf("Couldn't DROP database `%s`", $selectedDatabaseName), exit: true);
   }
   else
   {
@@ -39,7 +39,7 @@ try
 }
 catch(PDOException $e)
 {
-  Logger::error($e->getMessage(), terminateAfterLog: true);
+  Logger::error($e->getMessage(), exit: true);
 }
 
 $args = [null, $selectedDatabaseType, $selectedDatabaseName];

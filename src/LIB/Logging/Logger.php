@@ -12,28 +12,28 @@ final class Logger
   const FILE_UPDATE = 'UPDATE';
   const FILE_DELETE = 'DELETE';
 
-  public static function log(string $message, bool $terminateAfterLog = false): void
+  public static function log(string $message, bool $exit = false): void
   {
     echo new Log(message: "\e[1;34m${message}\e[0m\n");
-    if ($terminateAfterLog)
+    if ($exit)
     {
       exit(2);
     }
   }
 
-  public static function warn(string $message, bool $terminateAfterLog = false): void
+  public static function warn(string $message, bool $exit = false): void
   {
     echo new Log(message: "\e[1;33m${message}\e[0m\n");
-    if ($terminateAfterLog)
+    if ($exit)
     {
       exit(2);
     }
   }
 
-  public static function error(string $message, bool $terminateAfterLog = false): void
+  public static function error(string $message, bool $exit = false): void
   {
     echo new Log(message: "\e[1;31m${message}\e[0m\n");
-    if ($terminateAfterLog)
+    if ($exit)
     {
       exit(2);
     }

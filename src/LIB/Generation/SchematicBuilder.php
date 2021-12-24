@@ -44,7 +44,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
-        Logger::error("Could not create modules directory.", terminateAfterLog: true);
+        Logger::error("Could not create modules directory.", exit: true);
       }
 
       if ($this->verbose)
@@ -57,7 +57,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $featureDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
+        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
@@ -68,7 +68,7 @@ final class SchematicBuilder
 
     if (file_exists($targetFile))
     {
-      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+      Logger::error("$targetFileRelative already exists!", exit: true);
     }
     $content = file_get_contents($templatePath);
     $content = str_replace('ModuleName', $name, $content);
@@ -78,7 +78,7 @@ final class SchematicBuilder
 
     if ($filesize === false)
     {
-      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+      Logger::error("Could not create $targetFileRelative", exit: true);
     }
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
@@ -119,7 +119,7 @@ final class SchematicBuilder
 
     if (file_exists($targetFile))
     {
-      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+      Logger::error("$targetFileRelative already exists!", exit: true);
     }
     $content = file_get_contents($templatePath);
     $content = str_replace('/', '\\', str_replace('ModuleName', dirname($path), $content));
@@ -130,7 +130,7 @@ final class SchematicBuilder
 
     if ($filesize === false)
     {
-      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+      Logger::error("Could not create $targetFileRelative", exit: true);
     }
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
@@ -185,7 +185,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
-        Logger::error("Could not create modules directory.", terminateAfterLog: true);
+        Logger::error("Could not create modules directory.", exit: true);
       }
 
       if ($this->verbose)
@@ -198,7 +198,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $featureDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
+        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
@@ -209,7 +209,7 @@ final class SchematicBuilder
 
     if (file_exists($targetFile))
     {
-      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+      Logger::error("$targetFileRelative already exists!", exit: true);
     }
     $content = file_get_contents($templatePath);
     $content = str_replace('ModuleName', $name, $content);
@@ -218,7 +218,7 @@ final class SchematicBuilder
 
     if ($filesize === false)
     {
-      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+      Logger::error("Could not create $targetFileRelative", exit: true);
     }
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
@@ -254,7 +254,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
-        Logger::error("Could not create modules directory.", terminateAfterLog: true);
+        Logger::error("Could not create modules directory.", exit: true);
       }
 
       if ($this->verbose)
@@ -267,7 +267,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $featureDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
+        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
@@ -278,7 +278,7 @@ final class SchematicBuilder
 
     if (file_exists($targetFile))
     {
-      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+      Logger::error("$targetFileRelative already exists!", exit: true);
     }
     $content = file_get_contents($templatePath);
     $content = str_replace('ModuleName', $name, $content);
@@ -288,7 +288,7 @@ final class SchematicBuilder
 
     if ($filesize === false)
     {
-      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+      Logger::error("Could not create $targetFileRelative", exit: true);
     }
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
@@ -324,7 +324,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $modulesDirectory, recursive: true))
       {
-        Logger::error("Could not create modules directory.", terminateAfterLog: true);
+        Logger::error("Could not create modules directory.", exit: true);
       }
 
       if ($this->verbose)
@@ -337,7 +337,7 @@ final class SchematicBuilder
     {
       if (!mkdir(directory: $featureDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, terminateAfterLog: true);
+        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
@@ -348,7 +348,7 @@ final class SchematicBuilder
 
     if (file_exists($targetFile))
     {
-      Logger::error("$targetFileRelative already exists!", terminateAfterLog: true);
+      Logger::error("$targetFileRelative already exists!", exit: true);
     }
     $content = file_get_contents($templatePath);
     $content = str_replace('ModuleName', $name, $content);
@@ -357,7 +357,7 @@ final class SchematicBuilder
 
     if ($filesize === false)
     {
-      Logger::error("Could not create $targetFileRelative", terminateAfterLog: true);
+      Logger::error("Could not create $targetFileRelative", exit: true);
     }
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
