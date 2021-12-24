@@ -1,10 +1,10 @@
 {
-  "name": "",
-  "description": "",
-  "version": "0.0.0",
-  "projectType": "application",
-  "root": "",
-  "sourceRoot": "src",
+  "name": "NAME",
+  "description": "DESCRIPTION",
+  "version": "VERSION",
+  "projectType": "PROJECT_TYPE",
+  "root": "ROOT",
+  "sourceRoot": "SOURCE",
   "prefix": "app",
   "scripts": {
     "test": "./vendor/bin/phpunit --testdox"
