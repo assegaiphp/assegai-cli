@@ -341,7 +341,7 @@ function getoptions(string $shortOptions, array $longOptions, int &$restIndex, i
       continue;
     }
 
-    if (preg_match('/^[-]+([\w]+)(=\"*([\s\w.=\d]+)\"*)*/', $arg, $matches) !== false)
+    if (preg_match('/^[-]+([\w]+)(=\"*([\s\w.=\d-]+)\"*)*/', $arg, $matches) !== false)
     {
       $key = trim($matches[1]);
       $value = $matches[3] ?? null;
@@ -360,7 +360,7 @@ function getoptions(string $shortOptions, array $longOptions, int &$restIndex, i
         str_starts_with($next, '-')
       )
       {
-        # and no value is found, throw error
+        # and no value is found, log error
         Logger::error(message: sprintf("Option '%s' requires a value but none found at index '%d'", $key, $index), exit: true);
       }
 
@@ -370,7 +370,6 @@ function getoptions(string $shortOptions, array $longOptions, int &$restIndex, i
           is_numeric($value) => is_string($value) && str_contains($value, '.') ? floatval($value) : intval($value),
           default => $value
         };
-        $skipNext = true;
       }
       else if ($next !== false)
       {
