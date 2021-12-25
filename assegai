@@ -5,4 +5,4 @@ assegai_path=$(which assegai)
 assegai_path=${assegai_path:0:-7}
 src_dir="${assegai_path}src/"
 
-php "${src_dir}index.php" ${@:1}
+php "${src_dir}index.php" "${@:1}"
