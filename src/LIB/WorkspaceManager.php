@@ -81,7 +81,7 @@ final class WorkspaceManager
     $output['version']      = $version;
     $output['project_type'] = $project_type;
     $output['root']         = $root;
-    $output['source']       = $source;
+    $output['source']       = $source_root;
 
     $filename = "$filepath/assegai.json";
     $bytes = file_put_contents($filename, $assegaiJson);
