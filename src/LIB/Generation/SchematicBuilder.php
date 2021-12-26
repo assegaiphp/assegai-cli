@@ -373,7 +373,7 @@ final class SchematicBuilder
   public function templateDirectory(): string
   {
     global $assegaiPath;
-    return sprintf("%s/templates", $assegaiPath);
+    return sprintf("%s/templates/schematics", $assegaiPath);
   }
 
   public function modulesDirectory(): string
