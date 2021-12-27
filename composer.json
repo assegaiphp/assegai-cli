@@ -1,7 +1,7 @@
 {
   "name": "assegaiphp/assegai-cli",
   "description": "The Assegai CLI is a command-line interface tool that helps you to initialize, develop and maintain your Assegai applications. It assits in multiple ways, including scaffolding the project, serving it in development mode and building deploying the application for production. It embodies best-practive architectural patterns to encourage well-structured apps.",
-  "type": "project",
+  "type": "library",
   "require-dev": {
     "phpunit/phpunit": "^9.5"
   },
