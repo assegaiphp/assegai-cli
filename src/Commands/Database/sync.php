@@ -56,7 +56,7 @@ foreach($moduleNames as $moduleName)
   {
     if (str_ends_with($filename, 'Entity.php'))
     {
-      $entityName = "Assegai\\Modules\\$moduleName\\" . substr($filename, 0, -4);
+      $entityName = "AssegaiPHP\\Modules\\$moduleName\\" . substr($filename, 0, -4);
       $entity = new $entityName;
       $dbName = $entity->database();
 
