@@ -21,7 +21,7 @@ spl_autoload_register(function ($class) {
   global $sourcePath;
   $targetPath = str_replace('/src', '', $sourcePath);
   $filename   = str_replace('\\', DIRECTORY_SEPARATOR, $targetPath . "\\$class") . '.php';
-  $filename   = str_replace('Assegai', 'src', $filename);
+  $filename   = str_replace('AssegaiPHP', 'src', $filename);
 
   if (file_exists($filename))
   {
