@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\Home;
+namespace AssegaiPHP\Modules\Home;
 
 use Assegai\Core\Config;
 use Assegai\Core\Attributes\Controller;

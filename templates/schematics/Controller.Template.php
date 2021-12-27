@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace AssegaiPHP\Modules\ModuleName;
 
 use Assegai\Core\Attributes\Controller;
 use Assegai\Core\Attributes\Delete;

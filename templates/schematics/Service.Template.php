@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace AssegaiPHP\Modules\ModuleName;
 
 use Assegai\Core\Attributes\Injectable;
 use Assegai\Core\BaseCrudService;

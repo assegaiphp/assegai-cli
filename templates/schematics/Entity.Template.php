@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace AssegaiPHP\Modules\ModuleName;
 
 use Assegai\Database\Attributes\Entity;
 use Assegai\Database\BaseEntity;

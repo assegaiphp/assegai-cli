@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\Authentication;
+namespace AssegaiPHP\Modules\Authentication;
 
 use Assegai\Core\Attributes\Injectable;
 use Assegai\Core\Result;
@@ -13,7 +13,7 @@ use Assegai\Lib\Authentication\JWT\JWTToken;
 use Assegai\Lib\Authentication\Strategies\JWTStrategy;
 use Assegai\Lib\Authentication\Strategies\LocalStrategy;
 use Assegai\Lib\Authentication\Strategies\OAuthStrategy;
-use Assegai\Modules\Users\UsersService;
+use AssegaiPHP\Modules\Users\UsersService;
 use stdClass;
 
 #[Injectable]

@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\Authentication;
+namespace AssegaiPHP\Modules\Authentication;
 
 use Assegai\Core\BaseModule;
 use Assegai\Core\Attributes\Module;
