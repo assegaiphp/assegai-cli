@@ -2,13 +2,10 @@
 # Load configuration
 require_once 'autoload-config.php';
 
-
-# Load utilitiy functions
-require_once 'src/Util/index.php';
-
+# Autoload Workspace Classes
 spl_autoload_register(function ($class) {
   $namespaces = explode('\\', $class);
-  if ($namespaces[0] == 'Assegai')
+  if ($namespaces[0] == 'AssegaiPHP')
   {
     $namespaces[0] = 'src';
   }

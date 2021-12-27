@@ -1,7 +1,5 @@
 <?php
 
-require_once 'src/Core/Config.php';
-
 use Assegai\Core\Config;
 
 Config::hydrate();
