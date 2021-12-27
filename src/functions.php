@@ -50,7 +50,7 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
     }
     else
     {
-      if(!empty($defaultValue))
+      if(empty($line) && !empty($defaultValue))
       {
         $line = $defaultValue;
       }
