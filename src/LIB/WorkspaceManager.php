@@ -174,7 +174,7 @@ final class WorkspaceManager
     global $workingDirectory;
     $routesFilePath = sprintf("%s/app/routes.php", $workingDirectory);
     $routesFilePathRelative = str_replace($workingDirectory, '', $routesFilePath);
-    $namespace = "use Assegai\\Modules\\${moduleName}\\${moduleName}Module;";
+    $namespace = "use AssegaiPHP\\Modules\\${moduleName}\\${moduleName}Module;";
     $path = strtolower($moduleName);
     $class = "${moduleName}Module::class";
     $route = "  new Route(path: '${path}', module: ${class}),";
