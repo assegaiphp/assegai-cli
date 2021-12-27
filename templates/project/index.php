@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 use Assegai\Core\App;
 use Assegai\Core\Request;
 use Assegai\Core\Routing\Router;
