@@ -1,8 +1,10 @@
 <?php
 
 return [
-  'app_name'  => 'NAME',
-  'version'   => 'VERSION',
+  'app_name'        => 'NAME',
+  'version'         => 'VERSION',
+  'description'     => 'DESCRIPTION',
+  'company_name'    => 'YOUR_COMPANY',
   'default_password_hash_algo' => PASSWORD_DEFAULT,
   'databases' => [
     'mysql' => [
