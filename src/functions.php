@@ -343,6 +343,11 @@ function getoptions(string $shortOptions, array $longOptions, int &$restIndex, i
 
     if (preg_match('/^[-]+([\w]+)(=\"*([\s\w.=\d-]+)\"*)*/', $arg, $matches) !== false)
     {
+      if (empty($matches))
+      {
+        $restIndex = $index;
+        break;
+      }
       $key = trim($matches[1]);
       $value = $matches[3] ?? null;
 
