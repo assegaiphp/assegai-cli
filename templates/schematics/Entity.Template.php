@@ -9,5 +9,3 @@ use Assegai\Database\BaseEntity;
 class ClassNameEntity extends BaseEntity
 {
 }
-
-?>

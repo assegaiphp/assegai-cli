@@ -14,5 +14,3 @@ use Assegai\Database\BaseRepository;
 class ModuleNameRepository extends BaseRepository
 {
 }
-
-?>

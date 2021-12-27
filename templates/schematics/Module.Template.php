@@ -14,5 +14,3 @@ use Assegai\Core\Attributes\Module;
 class ModuleNameModule extends BaseModule
 {
 }
-
-?>

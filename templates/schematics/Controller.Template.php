@@ -71,5 +71,3 @@ class ModuleNameController extends BaseController
     return new Response(data: ['This action removes the PathName entity with id: ' . $id], dataOnly: true);
   }
 }
-
-?>
