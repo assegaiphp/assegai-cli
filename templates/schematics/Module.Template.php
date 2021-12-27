@@ -1,6 +1,6 @@
 <?php
 
-namespace Assegai\Modules\ModuleName;
+namespace AssegaiPHP\Modules\ModuleName;
 
 use Assegai\Core\BaseModule;
 use Assegai\Core\Attributes\Module;

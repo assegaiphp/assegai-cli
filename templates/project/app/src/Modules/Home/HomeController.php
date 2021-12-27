@@ -2,6 +2,7 @@
 
 namespace Assegai\Modules\Home;
 
+use Assegai\Core\Config;
 use Assegai\Core\Attributes\Controller;
 use Assegai\Core\BaseController;
 use Assegai\Core\Attributes\Get;
@@ -25,10 +26,10 @@ class HomeController extends BaseController
   public function default(): Response
   {
     $data = [
-      'name'        => 'Social Navigator API.',
-      'description' => 'Social Navigator powered by Life Raft API',
-      'version'     => '1.0.0',
-      'copyright'   => '© ' . date('Y') . ' Life Raft',
+      'name'        => Config::get('app_name'),
+      'description' => Config::get('description'),
+      'version'     => Config::get('version'),
+      'copyright'   => '© ' . date('Y') . ' ' . Config::get('company_name'),
     ];
 
     return new Response( data: $data, dataOnly: true );
