@@ -23,6 +23,12 @@ spl_autoload_register(function ($class) {
   $filename   = str_replace('\\', DIRECTORY_SEPARATOR, $targetPath . "\\$class") . '.php';
   $filename   = str_replace('AssegaiPHP', 'src', $filename);
 
+  if (str_contains($filename, 'Assegai'))
+  {
+    $filename = str_replace('app/', '', $filename);
+    $filename = str_replace('Assegai', 'vendor/assegaiphp/assegai/src', $filename);
+  }
+
   if (file_exists($filename))
   {
     require_once $filename;
