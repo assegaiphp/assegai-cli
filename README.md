@@ -2,6 +2,7 @@
 
 ## Requirements
 - PHP 8.1 (minimum)
+- Composer 2.x.x
 
 ## Description
 
