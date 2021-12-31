@@ -162,6 +162,68 @@ final class SchematicBuilder
     }
   }
 
+  public function buildGuard(?string $path, ?string $featureName = null): void
+  {
+    if (empty($path))
+    {
+      $path = prompt('Guard path', attempts: 3);
+    }
+
+    if (!empty($featureName))
+    {
+      $path = "$featureName/$path";
+    }
+
+    $guardName = basename(path: $path);
+
+    $templatePath = $this->templateDirectory() . "/Guard.Template.php";
+    $projectPath = $this->getWorkingDirectory();
+    $targetFile = "$projectPath/app/src/${path}Guard.php";
+    $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
+    $targetDirectory = dirname($targetFile);
+    $targetDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $targetDirectory);
+
+    if (!file_exists($templatePath))
+    {
+      Logger::error("Missing schematic template.");
+    }
+
+    if (file_exists($targetFile))
+    {
+      Logger::error("$targetFileRelative already exists!", exit: true);
+    }
+
+    if (!file_exists($targetDirectory))
+    {
+      if (!mkdir(directory: $targetDirectory, recursive: true))
+      {
+        Logger::error("Could not create " . $targetDirectoryRelative, exit: true);
+      }
+
+      if ($this->verbose)
+      {
+        Logger::logCreate($targetDirectoryRelative);
+      }
+    }
+
+    if (file_exists($targetFile))
+    {
+      Logger::error("$targetFileRelative already exists!", exit: true);
+    }
+    $content = file_get_contents($templatePath);
+    $content = str_replace('/', '\\', str_replace('GuardNamespace', dirname($path), $content));
+    $content = str_replace('/', '\\', str_replace('GuardName', $guardName, $content));
+
+    $filesize = file_put_contents(filename: $targetFile, data: $content);
+
+    if ($filesize === false)
+    {
+      Logger::error("Could not create $targetFileRelative", exit: true);
+    }
+
+    Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
+  }
+
   public function buildModule(?string $name): void
   {
     if (empty($name))
@@ -382,9 +444,15 @@ final class SchematicBuilder
     return sprintf("%s/app/src/Modules", $workingDirectory);
   }
 
+  public function getWorkingDirectory(): string
+  {
+    global $workingDirectory;
+    return $workingDirectory;
+  }
+
   public function relativeWorkingDirectoryPath(string $path): string
   {
     global $workingDirectory;
-    return str_replace($workingDirectory, '', $path);
+    return preg_replace('/^\//', '', str_replace($workingDirectory, '', $path));
   }
 }

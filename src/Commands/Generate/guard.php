@@ -1,14 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-echo sprintf("%s%25s", "Loading", "0%");
+namespace Assegai\CLI\Commands\Generate;
 
-for ($x = 1; $x < 101; $x++)
-{
-  echo sprintf("\r%s%25s", "Loading", "$x%");
-  usleep(10000000 / 500);
-  if ($x === 100)
-  {
-    echo "\n";
-  }
-}
+use Assegai\CLI\LIB\Generation\SchematicBuilder;
+
+list($name) = match (count($args)) {
+  1 => [null],
+  default => array_slice($args, 1)
+};
+
+$schematicBuilder = new SchematicBuilder();
+$schematicBuilder->buildGuard(path: $name);
