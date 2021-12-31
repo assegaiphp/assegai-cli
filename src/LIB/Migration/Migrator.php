@@ -100,6 +100,7 @@ final class Migrator
           {
             Logger::error(message: sprintf("Failed to run %s", $migration->name()), exit: true);
           }
+          $statement->closeCursor();
 
           $ranMigrations[$migration->value()] = $migration;
 
@@ -155,6 +156,7 @@ final class Migrator
           {
             Logger::error(message: sprintf("Failed to revert %s", $migration->name()), exit: true);
           }
+          $statement->closeCursor();
 
           $revertedMigrations[$migration->value()] = $migration;
 
