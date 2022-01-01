@@ -6,6 +6,7 @@ use Assegai\Core\Attributes\Injectable;
 use Assegai\Core\Result;
 use Assegai\Core\BaseService;
 use Assegai\Core\Config;
+use Assegai\Core\Responses\BadRequestErrorResponse;
 use Assegai\Lib\Authentication\Authenticator;
 use Assegai\Lib\Authentication\JWT\JWTHeader;
 use Assegai\Lib\Authentication\JWT\JWTPayload;
@@ -65,6 +66,16 @@ class AuthenticationService extends BaseService
         break;
 
       default:
+    }
+
+    if (!isset($entity->$usernameFieldName))
+    {
+      exit(new BadRequestErrorResponse(message: "Missing required field: '$usernameFieldName'"));
+    }
+
+    if (!isset($entity->$passwordFieldName))
+    {
+      exit(new BadRequestErrorResponse(message: "Missing required field: '$passwordFieldName'"));
     }
 
     $data = $strategy->validate(username: $entity->$usernameFieldName, password: $entity->$passwordFieldName);
