@@ -43,7 +43,7 @@ $mainMenu->addRange([
   new MenuItem(value: 'database', alias: 'd', description: 'Manages configured database schemas.'),
   new MenuItem(value: 'generate', alias: 'g', description: 'Generates and/or modifies files based on a schematic.'),
   new MenuItem(value: 'info', description: 'Displays Assegai project details.'),
-  new MenuItem(value: 'init', description: 'Creates an empty Assegai workspace or reinitialize an existing one.'),
+  new MenuItem(value: 'init', description: 'Creates an empty Assegai workspace or reinitializes an existing one.'),
   new MenuItem(value: 'lint', description: 'Runs the code linter.'),
   new MenuItem(value: 'migration', description: 'Manages database migrations.'),
   new MenuItem(value: 'new', description: 'Generates a new Assegai application.'),
