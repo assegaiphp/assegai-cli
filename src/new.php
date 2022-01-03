@@ -94,14 +94,17 @@ $configContent = str_replace('DESCRIPTION', $outuput['description'], $configCont
 $configContent = str_replace('VERSION', $outuput['version'], $configContent);
 
 $configUpdateResult = file_put_contents($configPath, $configContent);
-
 echo "\n";
-$userServiceName = prompt(message: 'What is the name of the users feature?', defaultValue: 'Users');
 
-if ($userServiceName)
+if (!file_exists("$projectPath/app/src/Modules/Users"))
 {
-  $schematicBuilder = new SchematicBuilder();
-  $schematicBuilder->buildFeature(name: $userServiceName);
+  $userServiceName = prompt(message: 'What is the name of the users feature?', defaultValue: 'Users');
+  
+  if ($userServiceName)
+  {
+    $schematicBuilder = new SchematicBuilder();
+    $schematicBuilder->buildFeature(name: $userServiceName);
+  }
 }
 
 printf(
