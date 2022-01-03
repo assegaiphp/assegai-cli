@@ -43,14 +43,26 @@ class AuthenticationService extends BaseService
 
     $strategyType = $strategy;
 
+    $authenticator = new Authenticator;
+
+    $strategyClass = $authenticator->getStrategy(name: $strategyType, args: [ 'usersService' => $this->usersService ]);
+
+    if ($strategyClass === false)
+    {
+      exit(new BadRequestErrorResponse(message: "Unknown strategy: $strategyType"));
+    }
+
+    if (!$strategyClass)
+    {
+      exit(new BadRequestErrorResponse(message: "Unknown strategy: $strategyType"));
+    }
+
     $strategy = match($strategyType) {
       'local' => new LocalStrategy( usersService: $this->usersService ),
       'jwt'   => new JWTStrategy( usersService: $this->usersService ),
       'oauth' => new OAuthStrategy(),
       default => new LocalStrategy( usersService: $this->usersService )
     };
-
-    $authenticator = new Authenticator(strategy: $strategy);
     
     $usernameFieldName = 'username';
     $passwordFieldName = 'password';
@@ -58,6 +70,7 @@ class AuthenticationService extends BaseService
     switch($strategyType)
     {
       case 'local':
+      case 'jwt':
         if (isset(Config::get('authentication')['jwt']))
         {
           $usernameFieldName = Config::get('authentication')['jwt']['entityIdFieldname'];
