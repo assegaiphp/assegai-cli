@@ -1,11 +1,12 @@
 # Assegai CLI
 
 ## Requirements
-- PHP 8.0 (minimum)
+- PHP 8.1 (minimum)
+- Composer 2.x.x
 
 ## Description
 
-The Assegai CLI is a command-line interface tool that helps you to initialize, develop and maintain your Assegai applications. It assits in multiple ways, including scaffolding the project, serving it in development mode and building deploying the application for production. It embodies best-practive architectural patterns to encourage well-structured apps.
+The Assegai CLI is a command-line interface tool that helps you to initialize, develop and maintain your Assegai applications. It assits in multiple ways, including scaffolding the project, serving it in development mode and building the application for production. It embodies best-practice architectural patterns to encourage well-structured apps.
 
 The CLI works with [schematics][schematics] and provides built in support from the schematics collection at [@assegaphp/schematics](https://github.com/assegai-php/schematics)
 
@@ -17,7 +18,9 @@ Before we create a new Assegai application on your Windows machine, make sure to
 
 Next, you are ready to create your first Assegai project. Launch Windows Terminal and begin a new terminal session for your WSL2 Linux operating system. Next, you can use a simple terminal command to create a new Assegai project. For example, to create a new Assegai application in a directory named "example-app", you may run the following command in your terminal:
 
-`$ composer install -g @assegai/cli`
+```
+$ composer global require assegaiphp/assegai-cli
+```
 
 ## Usage
 
@@ -31,6 +34,6 @@ Learn more in the [official documentaion](https://docs.assegai.ml/cli/overview).
 
 ## License
 
-Assegai is [MIT Licensed](#LICENSE)
+Assegai CLI is [MIT Licensed](#LICENSE)
 
 [schematics]: https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/schematics

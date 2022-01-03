@@ -1,0 +1,15 @@
+.htaccess
+.env
+app/config/local*
+cli
+logs/*
+storage/audio/*
+storage/images/*
+storage/videos/*
+.idea/
+.vscode/
+.data/
+
+/vendor/
+/docs/
+composer-installer

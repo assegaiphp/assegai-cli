@@ -1,0 +1,18 @@
+{
+  "name": "NAME",
+  "description": "DESCRIPTION",
+  "version": "VERSION",
+  "projectType": "PROJECT_TYPE",
+  "root": "ROOT",
+  "sourceRoot": "SOURCE",
+  "prefix": "app",
+  "scripts": {
+    "test": "./vendor/bin/phpunit --testdox"
+  },
+  "development": {
+    "server": {
+      "host": "localhost",
+      "port": 5000
+    }
+  }
+}
