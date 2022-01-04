@@ -204,20 +204,26 @@ final class ConsoleCursor
    * Moves cursor one line up, scrolling if needed
    * 
    * @param bool $return 
-   * If used and set to true, moveUpBy will return a string containing ANSI code instead of outputing it.
+   * If used and set to true, moveUp will return a string containing ANSI code instead of outputing it.
    * 
    * @return null|string Returns a string containing ANSI code or null if `$return` is set to false.
    */
   public static function moveUp(bool $return = false): ?string
   {
-    $code = "\033 M";
-    if ($return)
-    {
-      return $code;
-    }
-    echo $code;
+    return ConsoleCursor::moveUpBy(numberOfLines: 1);
+  }
 
-    return null;
+  /**
+   * Moves cursor one line down, scrolling if needed
+   * 
+   * @param bool $return 
+   * If used and set to true, moveDown will return a string containing ANSI code instead of outputing it.
+   * 
+   * @return null|string Returns a string containing ANSI code or null if `$return` is set to false.
+   */
+  public static function moveDown(bool $return = false): ?string
+  {
+    return ConsoleCursor::moveDownBy(numberOfLines: 1);
   }
 
   /**
@@ -229,7 +235,7 @@ final class ConsoleCursor
    * 
    * @return null|string Returns a string containing ANSI code or null if `$return` is set to false.
    */
-  public static function savePosition(bool $useSCO = false, bool $return = false): ?string
+  public static function savePosition(bool $useSCO = true, bool $return = false): ?string
   {
     $code = $useSCO ? "\033[s" : "\033 7";
     if ($return)
@@ -250,7 +256,7 @@ final class ConsoleCursor
    * 
    * @return null|string Returns a string containing ANSI code or null if `$return` is set to false.
    */
-  public static function restorePosition(bool $useSCO = false, bool $return = false): ?string
+  public static function restorePosition(bool $useSCO = true, bool $return = false): ?string
   {
     $code = $useSCO ? "\033[u" : "\033 8";
     if ($return)
@@ -260,5 +266,17 @@ final class ConsoleCursor
 
     echo $code;
     return null;
+  }
+
+  public static function setVisibility(bool $isVisible): void
+  {
+    if ($isVisible)
+    {
+      system(command: "tput cnorm");
+    }
+    else
+    {
+      system(command: "tput civis");
+    }
   }
 }
