@@ -172,7 +172,10 @@ class Menu
     return trim("${description}${titleColorCode}" . $this->title . "\e[0m\n$itemsOutput") . "\n";
   }
 
-  public function prompt(string $message = 'Choose option', bool $useKeypad = false, bool $multiSelect = false): ?MenuItem
+  /**
+   * @return null|MenuItem|MenuItem[]
+   */
+  public function prompt(string $message = 'Choose option', bool $useKeypad = false, bool $multiSelect = false): null|MenuItem|array
   {
     global $assegaiPath;
 
@@ -186,9 +189,15 @@ class Menu
       }
 
       $selectedIndex = 0;
-      $response = promptSelect(options: $options, message: $message, selectedIndex: $selectedIndex);
+      $response = promptSelect(options: $options, message: $message, selectedIndex: $selectedIndex, multiSelect: $multiSelect);
 
       $this->selected = $this->items[($selectedIndex + 1)];
+
+      if ($multiSelect)
+      {
+        echo Color::RESET;
+        return $response;
+      }
     }
     else
     {
