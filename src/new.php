@@ -4,6 +4,8 @@
 use Assegai\CLI\LIB\Color;
 use Assegai\CLI\LIB\Generation\SchematicBuilder;
 use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Menus\Menu;
+use Assegai\CLI\LIB\Menus\MenuItem;
 use Assegai\CLI\LIB\TextStyle;
 use Assegai\CLI\LIB\Util\Console;
 use Assegai\CLI\LIB\Util\TermInfo;
@@ -109,7 +111,53 @@ if (!file_exists("$projectPath/app/src/Modules/Users"))
 
 if (confirm(message: 'Would you like to connect to a database?'))
 {
-  // $databaseType = promptSelect(options: [])
+  $dbTypesMenu = new Menu(
+    title: '',
+    items: [
+      new MenuItem(value: 'MySQL (MariaDB)'),
+      new MenuItem(value: 'PostgreSQL'),
+      new MenuItem(value: 'SQLite'),
+      new MenuItem(value: 'MongoDB'),
+    ]
+  );
+  $databaseType = $dbTypesMenu->prompt(message: 'Which database are you connecting to', useKeypad: true);
+
+  $databaseType = match($databaseType) {
+    'MySQL (MariaDB)' => 'mysql',
+    'PostgreSQL'      => 'pgsql',
+    'SQLite'          => 'sqlite',
+    'MongoDB'         => 'mongodb',
+    default           => 'mysql'
+  };
+
+  $dbConfig = [];
+  $dbName = prompt('What is the database name', defaultValue: 'assegai');
+  $dbConfig['name'] = $dbName;
+
+  if ($databaseType === 'sqlite')
+  {
+    $dbConfig[$dbName]['path'] = prompt('Path', defaultValue: '.data/db_assegai.sq3');
+  }
+  else
+  {
+    $dbConfig[$dbName]['host'] = prompt('Host', defaultValue: 'localhost');
+    $dbConfig[$dbName]['user'] = prompt('User', defaultValue: 'root');
+    $dbConfig[$dbName]['password'] = prompt('Password');
+    
+    $defaultPort = match($databaseType) {
+      'mysql' => 3306,
+      'pgsql' => 5432,
+      default => null
+    };
+  
+    if ($defaultPort)
+    {
+      $dbPort = intval(prompt('Port', defaultValue: "$defaultPort"));
+      $dbConfig[$dbName]['port'] = $dbPort;
+    }
+  }
+
+  print_r($dbConfig);
 }
 
 printf(
