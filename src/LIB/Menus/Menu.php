@@ -10,6 +10,9 @@ class Menu
 {
   private ?MenuItem $selected = null;
 
+  /**
+   * @param array<int, MenuItem> $items
+   */
   public function __construct(
     private string $title,
     private array $items = [],
@@ -169,22 +172,32 @@ class Menu
     return trim("${description}${titleColorCode}" . $this->title . "\e[0m\n$itemsOutput") . "\n";
   }
 
-  public function prompt(string $message = 'Choose option', bool $useKeypad = false): ?MenuItem
+  /**
+   * @return null|MenuItem|MenuItem[]
+   */
+  public function prompt(string $message = 'Choose option', bool $useKeypad = false, bool $multiSelect = false): null|MenuItem|array
   {
     global $assegaiPath;
 
     if ($useKeypad)
     {
-      $options = [$this->title()];
+      $options = [];
 
       foreach ($this->items as $item)
       {
         $options[] = $item->value();
       }
 
-      $response = promptSelect(options: $options, message: $message);
+      $selectedIndex = 0;
+      $response = promptSelect(options: $options, message: $message, selectedIndex: $selectedIndex, multiSelect: $multiSelect);
 
-      $this->selected = $this->items[$response];
+      $this->selected = $this->items[($selectedIndex + 1)];
+
+      if ($multiSelect)
+      {
+        echo Color::RESET;
+        return $response;
+      }
     }
     else
     {
