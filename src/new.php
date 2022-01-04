@@ -107,6 +107,11 @@ if (!file_exists("$projectPath/app/src/Modules/Users"))
   }
 }
 
+if (confirm(message: 'Would you like to connect to a database?'))
+{
+  // $databaseType = promptSelect(options: [])
+}
+
 printf(
   "%s%s\r%s✔%s Installation done! ☕\n\n",
   Console::cursor()::moveUp(return: true),
