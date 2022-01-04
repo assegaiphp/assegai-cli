@@ -4,7 +4,11 @@
 use Assegai\CLI\LIB\Color;
 use Assegai\CLI\LIB\Logging\Logger;
 use Assegai\CLI\LIB\Util\Console;
+use Assegai\CLI\LIB\Util\ConsoleCursor;
+use Assegai\CLI\LIB\Util\TermInfo;
 use Assegai\CLI\LIB\WorkspaceManager;
+use Iber\Phkey\Environment\Detector;
+use Iber\Phkey\Events\KeyPressEvent;
 
 /**
  * Checks the `workding directory` for an `assegai.json` file. If no 
@@ -117,22 +121,105 @@ function confirm(string $message, bool $defaultYes = true): bool
   return $response;
 }
 
-function promptSelect(array $options, ?string $message = null): string
+function promptSelect(array $options, ?string $message = null, int &$selectedIndex = 0, bool $multiSelect = false): string
 {
-  global $assegaiPath;
+  $GLOBALS['selectedOption'] = null;
+  $GLOBALS['promptOptions'] = $options;
+  $GLOBALS['totalOptions'] = count($options);
+  $GLOBALS['selectedIndex'] = $selectedIndex;
 
-  $arguments = '';
-  foreach ($options as $option)
-  {
-    $arguments .= "\"$option\" ";
-  }
-  $arguments = trim($arguments);
+  printf("\r%s?%s %s: %s\n", Color::GREEN, Color::RESET, $message, Color::RESET);
 
-  if (!empty($message))
+  printOptions(options: $options, selectedIndex: $selectedIndex);
+
+  ConsoleCursor::setVisibility(isVisible: false);
+  $detector = new Detector();
+  $listener = $detector->getListenerInstance();
+
+  $eventDispatcher = $listener->getEventDispatcher();
+
+  $eventDispatcher->addListener('key:press', function (KeyPressEvent $event) {
+    global $selectedIndex, $totalOptions, $promptOptions;
+
+    switch ($event->getKey())
+    {
+      case 'up':
+        --$selectedIndex;
+        break;
+
+      case 'down':
+        ++$selectedIndex;
+        break;
+      
+      case 'space':
+        break;
+    }
+
+    $selectedIndex = wrap($selectedIndex, 0, $totalOptions);
+    printOptions(options: $promptOptions, selectedIndex: $selectedIndex);
+  });
+
+  $eventDispatcher->addListener('key:enter', function (KeyPressEvent $event) use ($eventDispatcher) {
+    global $selectedOption, $promptOptions, $selectedIndex;
+    $selectedOption = $promptOptions[$selectedIndex];
+
+    clearOptions(options: $promptOptions);
+    ConsoleCursor::setVisibility(isVisible: true);
+
+    $eventDispatcher->dispatch('key:stop:listening');
+  });
+
+  $listener->start();
+
+  $selectedIndex = $GLOBALS['selectedIndex'];
+  $selectedOption = $options[$selectedIndex];
+
+  ConsoleCursor::moveUp();
+  printf("\r%s?%s %s: %s%s%s\n", Color::GREEN, Color::RESET, $message, Color::LIGHT_BLUE, $selectedOption, Color::RESET);
+
+  return $selectedOption;
+}
+
+function printOptions(array $options, int $selectedIndex = 0, bool $checkboxMode = false): void
+{
+  $totalOptions = count($options);
+
+  if (is_null($selectedIndex))
   {
-    printf("%s?%s %s:\n", Color::GREEN, Color::RESET, $message);
+    $selectedIndex = 0;
   }
-  return system("$assegaiPath/bin/menu_selector $arguments");
+
+  foreach ($options as $index => $option)
+  {
+    Console::eraser()->entireLine();
+    $color = ($index === $selectedIndex) ? sprintf("%s❯  ", Color::LIGHT_BLUE) : sprintf("%s   ", Color::RESET);
+    printf("%s%s%s\n", $color, $option, Color::RESET);
+  }
+
+  Console::cursor()->moveUpBy(numberOfLines: $totalOptions);
+}
+
+function clearOptions(array $options)
+{
+  $totalOptions = count($options);
+  $terminalWidth = TermInfo::windowSize()->width();
+
+  Console::cursor()->moveDownBy(numberOfLines: $totalOptions);
+  Console::eraser()->entireLine();
+
+  for ($x = 0; $x < $totalOptions; $x++)
+  {
+    Console::cursor()->moveUp();
+    Console::eraser()->entireLine();
+  }
+}
+
+function printBlankSpaces(int $numberOfSpaces = 1): void
+{
+  for ($x = 0; $x < $numberOfSpaces; $x++)
+  {
+    echo ' ';
+  }
 }
 
 function bytesFormat(?int $bytes): string
@@ -206,6 +293,21 @@ function clamp(int|float $value, int|float $min, int|float $max): int|float
 
   if ($value > $max) {
     return $max;
+  }
+
+  return $value;
+}
+
+function wrap(int $value, int $min, int $max): int
+{
+  if ($value < $min)
+  {
+    return $max - 1;
+  }
+
+  if ($value >= $max)
+  {
+    return $min;
   }
 
   return $value;
