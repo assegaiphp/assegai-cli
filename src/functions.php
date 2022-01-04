@@ -121,12 +121,25 @@ function confirm(string $message, bool $defaultYes = true): bool
   return $response;
 }
 
-function promptSelect(array $options, ?string $message = null, int &$selectedIndex = 0, bool $multiSelect = false): string
+function promptSelect(array $options, ?string $message = null, int &$selectedIndex = 0, bool $multiSelect = false): string|array
 {
   $GLOBALS['selectedOption'] = null;
   $GLOBALS['promptOptions'] = $options;
   $GLOBALS['totalOptions'] = count($options);
   $GLOBALS['selectedIndex'] = $selectedIndex;
+  $GLOBALS['multiSelect'] = $multiSelect;
+  
+  $checkedOptions = [];
+  
+  if ($multiSelect)
+  {
+    foreach ($options as $index => $option)
+    {
+      $checkedOptions[$index] = false; 
+    }
+  }
+
+  $GLOBALS['checkedOptions'] = $checkedOptions;
 
   printf("\r%s?%s %s: %s\n", Color::GREEN, Color::RESET, $message, Color::RESET);
 
@@ -139,7 +152,7 @@ function promptSelect(array $options, ?string $message = null, int &$selectedInd
   $eventDispatcher = $listener->getEventDispatcher();
 
   $eventDispatcher->addListener('key:press', function (KeyPressEvent $event) {
-    global $selectedIndex, $totalOptions, $promptOptions;
+    global $selectedIndex, $totalOptions, $promptOptions, $multiSelect, $checkedOptions;
 
     switch ($event->getKey())
     {
@@ -152,6 +165,13 @@ function promptSelect(array $options, ?string $message = null, int &$selectedInd
         break;
       
       case 'space':
+        if ($multiSelect && $checkedOptions)
+        {
+          if (isset($checkedOptions[$selectedIndex]))
+          {
+            $checkedOptions[$selectedIndex] = !$checkedOptions[$selectedIndex];
+          }
+        }
         break;
     }
 
@@ -172,16 +192,36 @@ function promptSelect(array $options, ?string $message = null, int &$selectedInd
   $listener->start();
 
   $selectedIndex = $GLOBALS['selectedIndex'];
-  $selectedOption = $options[$selectedIndex];
+  $selectedOption = $multiSelect
+    ? ''
+    : $options[$selectedIndex];
 
   ConsoleCursor::moveUp();
   printf("\r%s?%s %s: %s%s%s\n", Color::GREEN, Color::RESET, $message, Color::LIGHT_BLUE, $selectedOption, Color::RESET);
 
-  return $selectedOption;
+  $selectedOptions = [];
+  if ($multiSelect)
+  {
+    $checkedOptions = $GLOBALS['checkedOptions'];
+
+    foreach ($checkedOptions as $index => $value)
+    {
+      if ($value)
+      {
+        $selectedOptions[] = $options[$index];
+      }
+    }
+  }
+
+  return match (true) {
+    $multiSelect => $selectedOptions,
+    default => $selectedOption
+  };
 }
 
-function printOptions(array $options, int $selectedIndex = 0, bool $checkboxMode = false): void
+function printOptions(array $options, int $selectedIndex = 0): void
 {
+  global $multiSelect, $checkedOptions;
   $totalOptions = count($options);
 
   if (is_null($selectedIndex))
@@ -192,7 +232,18 @@ function printOptions(array $options, int $selectedIndex = 0, bool $checkboxMode
   foreach ($options as $index => $option)
   {
     Console::eraser()->entireLine();
-    $color = ($index === $selectedIndex) ? sprintf("%s❯  ", Color::LIGHT_BLUE) : sprintf("%s   ", Color::RESET);
+    $prefix = ' ';
+
+    if ($multiSelect)
+    {
+      $prefix = $checkedOptions[$index]
+        ? sprintf("%s%s%s", Color::LIGHT_GREEN, '◉', Color::RESET)
+        : sprintf("%s%s", Color::RESET, '◯');
+    }
+
+    $color = ($index === $selectedIndex)
+      ? sprintf("%s❯%s%s ", Color::LIGHT_BLUE, $prefix, Color::LIGHT_BLUE)
+      : sprintf("%s %s ", Color::RESET, $prefix);
     printf("%s%s%s\n", $color, $option, Color::RESET);
   }
 
