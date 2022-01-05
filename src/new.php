@@ -4,6 +4,8 @@
 use Assegai\CLI\LIB\Color;
 use Assegai\CLI\LIB\Generation\SchematicBuilder;
 use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Menus\Menu;
+use Assegai\CLI\LIB\Menus\MenuItem;
 use Assegai\CLI\LIB\TextStyle;
 use Assegai\CLI\LIB\Util\Console;
 use Assegai\CLI\LIB\Util\TermInfo;
@@ -85,7 +87,8 @@ if ($dependancyInstallationResult === false)
 
 $oldWorkingDirectory = $workingDirectory;
 $workingDirectory = $projectPath;
-$configPath = "$projectPath/app/config/default.php";
+$configPathRelative = 'app/config/default.php';
+$configPath = "$projectPath/$configPathRelative";
 
 # Setup config
 $configContent = file_get_contents($configPath);
@@ -105,6 +108,73 @@ if (!file_exists("$projectPath/app/src/Modules/Users"))
     $schematicBuilder = new SchematicBuilder();
     $schematicBuilder->buildFeature(name: $userServiceName);
   }
+}
+
+if (confirm(message: 'Would you like to connect to a database?'))
+{
+  $dbTypesMenu = new Menu(
+    title: '',
+    items: [
+      new MenuItem(value: 'MySQL (MariaDB)'),
+      new MenuItem(value: 'PostgreSQL'),
+      new MenuItem(value: 'SQLite'),
+      new MenuItem(value: 'MongoDB'),
+    ]
+  );
+  $databaseType = $dbTypesMenu->prompt(message: 'Which database are you connecting to', useKeypad: true);
+
+  $databaseType = match($databaseType) {
+    'MySQL (MariaDB)' => 'mysql',
+    'PostgreSQL'      => 'pgsql',
+    'SQLite'          => 'sqlite',
+    'MongoDB'         => 'mongodb',
+    default           => 'mysql'
+  };
+
+  $dbConfig = [];
+  $dbName = prompt('What is the database name', defaultValue: $safeName);
+  $dbConfig[$dbName]['name'] = $dbName;
+
+  if ($databaseType === 'sqlite')
+  {
+    $dbConfig[$dbName]['path'] = prompt('Path', defaultValue: '.data/db_assegai.sq3');
+  }
+  else
+  {
+    $dbConfig[$dbName]['host'] = prompt('Host', defaultValue: 'localhost');
+    $dbConfig[$dbName]['user'] = prompt('User', defaultValue: 'root');
+    $dbConfig[$dbName]['password'] = promptPassword();
+    
+    $defaultPort = match($databaseType) {
+      'mysql' => 3306,
+      'pgsql' => 5432,
+      default => null
+    };
+  
+    if ($defaultPort)
+    {
+      $dbPort = intval(prompt('Port', defaultValue: "$defaultPort"));
+      $dbConfig[$dbName]['port'] = $dbPort;
+    }
+  }
+
+  $configArray = include($configPath);
+
+  if (!isset($configArray['databases'][$databaseType]))
+  {
+    $configArray['databases'][$databaseType] = [];
+  }
+
+  $configArray['databases'][$databaseType] = $dbConfig;
+
+  $configUpdateResult = updateArrayFile(filename: $configPath, replacement: $configArray);
+
+  if ($configUpdateResult === false)
+  {
+    Logger::error(message: "Failed to update $configPathRelative", exit: true);
+  }
+
+  Logger::logUpdate(path: $configPathRelative, filesize: $configUpdateResult);
 }
 
 printf(

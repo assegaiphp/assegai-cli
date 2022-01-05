@@ -4,7 +4,11 @@
 use Assegai\CLI\LIB\Color;
 use Assegai\CLI\LIB\Logging\Logger;
 use Assegai\CLI\LIB\Util\Console;
+use Assegai\CLI\LIB\Util\ConsoleCursor;
+use Assegai\CLI\LIB\Util\TermInfo;
 use Assegai\CLI\LIB\WorkspaceManager;
+use Iber\Phkey\Environment\Detector;
+use Iber\Phkey\Events\KeyPressEvent;
 
 /**
  * Checks the `workding directory` for an `assegai.json` file. If no 
@@ -80,6 +84,20 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   return $line;
 }
 
+function promptPassword(string $message = 'Password', ?int $attempts = null): string
+{
+  # Turn echo off
+  `/bin/stty -echo`;
+
+  $line = prompt(message: $message, attempts: $attempts);
+
+  # Turn echo no
+  `/bin/stty echo`;
+  echo "\n";
+
+  return $line;
+}
+
 function confirm(string $message, bool $defaultYes = true): bool
 {
   $suffix = $defaultYes ? 'Y/n' : 'y/N';
@@ -117,22 +135,156 @@ function confirm(string $message, bool $defaultYes = true): bool
   return $response;
 }
 
-function promptSelect(array $options, ?string $message = null): string
+function promptSelect(array $options, ?string $message = null, int &$selectedIndex = 0, bool $multiSelect = false): string|array
 {
-  global $assegaiPath;
-
-  $arguments = '';
-  foreach ($options as $option)
+  $GLOBALS['selectedOption'] = null;
+  $GLOBALS['promptOptions'] = $options;
+  $GLOBALS['totalOptions'] = count($options);
+  $GLOBALS['selectedIndex'] = $selectedIndex;
+  $GLOBALS['multiSelect'] = $multiSelect;
+  
+  $checkedOptions = [];
+  
+  if ($multiSelect)
   {
-    $arguments .= "\"$option\" ";
+    foreach ($options as $index => $option)
+    {
+      $checkedOptions[$index] = false; 
+    }
   }
-  $arguments = trim($arguments);
 
-  if (!empty($message))
+  $GLOBALS['checkedOptions'] = $checkedOptions;
+
+  printf("\r%s?%s %s: %s\n", Color::GREEN, Color::RESET, $message, Color::RESET);
+
+  printOptions(options: $options, selectedIndex: $selectedIndex);
+
+  ConsoleCursor::setVisibility(isVisible: false);
+  $detector = new Detector();
+  $listener = $detector->getListenerInstance();
+
+  $eventDispatcher = $listener->getEventDispatcher();
+
+  $eventDispatcher->addListener('key:press', function (KeyPressEvent $event) {
+    global $selectedIndex, $totalOptions, $promptOptions, $multiSelect, $checkedOptions;
+
+    switch ($event->getKey())
+    {
+      case 'up':
+        --$selectedIndex;
+        break;
+
+      case 'down':
+        ++$selectedIndex;
+        break;
+      
+      case 'space':
+        if ($multiSelect && $checkedOptions)
+        {
+          if (isset($checkedOptions[$selectedIndex]))
+          {
+            $checkedOptions[$selectedIndex] = !$checkedOptions[$selectedIndex];
+          }
+        }
+        break;
+    }
+
+    $selectedIndex = wrap($selectedIndex, 0, $totalOptions);
+    printOptions(options: $promptOptions, selectedIndex: $selectedIndex);
+  });
+
+  $eventDispatcher->addListener('key:enter', function (KeyPressEvent $event) use ($eventDispatcher) {
+    global $selectedOption, $promptOptions, $selectedIndex;
+    $selectedOption = $promptOptions[$selectedIndex];
+
+    clearOptions(options: $promptOptions);
+    ConsoleCursor::setVisibility(isVisible: true);
+
+    $eventDispatcher->dispatch('key:stop:listening');
+  });
+
+  $listener->start();
+
+  $selectedIndex = $GLOBALS['selectedIndex'];
+  $selectedOption = $multiSelect
+    ? ''
+    : $options[$selectedIndex];
+
+  ConsoleCursor::moveUp();
+  printf("\r%s?%s %s: %s%s%s\n", Color::GREEN, Color::RESET, $message, Color::LIGHT_BLUE, $selectedOption, Color::RESET);
+
+  $selectedOptions = [];
+  if ($multiSelect)
   {
-    printf("%s?%s %s:\n", Color::GREEN, Color::RESET, $message);
+    $checkedOptions = $GLOBALS['checkedOptions'];
+
+    foreach ($checkedOptions as $index => $value)
+    {
+      if ($value)
+      {
+        $selectedOptions[] = $options[$index];
+      }
+    }
   }
-  return system("$assegaiPath/bin/menu_selector $arguments");
+
+  return match (true) {
+    $multiSelect => $selectedOptions,
+    default => $selectedOption
+  };
+}
+
+function printOptions(array $options, int $selectedIndex = 0): void
+{
+  global $multiSelect, $checkedOptions;
+  $totalOptions = count($options);
+
+  if (is_null($selectedIndex))
+  {
+    $selectedIndex = 0;
+  }
+
+  foreach ($options as $index => $option)
+  {
+    Console::eraser()->entireLine();
+    $prefix = ' ';
+
+    if ($multiSelect)
+    {
+      $prefix = $checkedOptions[$index]
+        ? sprintf("%s%s%s", Color::LIGHT_GREEN, '◉', Color::RESET)
+        : sprintf("%s%s", Color::RESET, '◯');
+    }
+
+    $color = ($index === $selectedIndex)
+      ? sprintf("%s❯%s%s ", Color::LIGHT_BLUE, $prefix, Color::LIGHT_BLUE)
+      : sprintf("%s %s ", Color::RESET, $prefix);
+    printf("%s%s%s\n", $color, $option, Color::RESET);
+  }
+
+  Console::cursor()->moveUpBy(numberOfLines: $totalOptions);
+}
+
+function clearOptions(array $options)
+{
+  $totalOptions = count($options);
+  $terminalWidth = TermInfo::windowSize()->width();
+
+  Console::cursor()->moveDownBy(numberOfLines: $totalOptions);
+  Console::eraser()->entireLine();
+
+  for ($x = 0; $x < $totalOptions; $x++)
+  {
+    Console::cursor()->moveUp();
+    Console::eraser()->entireLine();
+  }
+}
+
+function printBlankSpaces(int $numberOfSpaces = 1): void
+{
+  for ($x = 0; $x < $numberOfSpaces; $x++)
+  {
+    echo ' ';
+  }
 }
 
 function bytesFormat(?int $bytes): string
@@ -206,6 +358,21 @@ function clamp(int|float $value, int|float $min, int|float $max): int|float
 
   if ($value > $max) {
     return $max;
+  }
+
+  return $value;
+}
+
+function wrap(int $value, int $min, int $max): int
+{
+  if ($value < $min)
+  {
+    return $max - 1;
+  }
+
+  if ($value >= $max)
+  {
+    return $min;
   }
 
   return $value;
@@ -396,4 +563,35 @@ function getoptions(string $shortOptions, array $longOptions, int &$restIndex, i
   }
 
   return $options;
+}
+
+function updateArrayFile(string $filename, array $replacement): int|false
+{
+  $bytes = 0;
+
+  if (!file_exists($filename))
+  {
+    return false;
+  }
+  
+  $fileContent = file_get_contents(filename: $filename);
+
+  $fileArray = include($filename);
+
+  if (!is_array($fileArray))
+  {
+    return false;
+  }
+  
+  $fileArray = array_replace($fileArray, $replacement);
+  $fileArrayFormatted = str_replace('array (', '[', var_export($fileArray, true));
+  $fileArrayFormatted = str_replace(')', ']', $fileArrayFormatted);
+  $fileArrayFormatted = preg_replace('/=>[\s]*\n[\s]*\[/', '=> [', $fileArrayFormatted);
+  $fileContentReturnPos = strpos($fileContent, 'return');
+  $fileContentPrefix = substr($fileContent, 0, $fileContentReturnPos);
+  $data = $fileContentPrefix . "return " . $fileArrayFormatted . ";\n";
+
+  $bytes = file_put_contents(filename: $filename, data: $data);
+
+  return is_bool($bytes) ? false : $bytes;
 }
