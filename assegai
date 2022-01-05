@@ -1,8 +1,21 @@
 #!/bin/bash
 
+# Set the title
+PS1=$
+PROMPT_COMMAND=
+echo -en "\033]0;assegai\a"
+
 # Scripts path
 assegai_path=$(which assegai)
 assegai_path=${assegai_path:0:-7}
 src_dir="${assegai_path}src/"
+
+function cleanup()
+{
+  /bin/stty echo
+  tput cnorm
+}
+
+trap cleanup EXIT
 
 php "${src_dir}index.php" "${@:1}"

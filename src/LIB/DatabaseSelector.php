@@ -74,8 +74,8 @@ final class DatabaseSelector
       {
         $this->databaseTypesMenu->add(new MenuItem(value: $db));
       }
-      $this->databaseTypesMenu->add(new MenuItem(value: 'quit', index: 'x', indexColor: 'red'));
-      $choice = $this->databaseTypesMenu->prompt();
+      $this->databaseTypesMenu->add(new MenuItem(value: 'quit'));
+      $choice = $this->databaseTypesMenu->prompt(message: 'Database type', useKeypad: true);
   
       if (is_null($choice))
       {
@@ -98,10 +98,10 @@ final class DatabaseSelector
       {
         $this->availableDatabasesMenu->add(new MenuItem(value: $db));
       }
-      $this->availableDatabasesMenu->add(new MenuItem(value: 'quit', index: 'x', indexColor: 'red'));
-      $choice = $this->availableDatabasesMenu->prompt();
+      $this->availableDatabasesMenu->add(new MenuItem(value: 'quit'));
+      $choice = $this->availableDatabasesMenu->prompt(message: 'Database name', useKeypad: true);
       echo "\n";
-  
+
       if (is_null($choice))
       {
         Logger::error('Invalid choice');

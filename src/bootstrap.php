@@ -2,6 +2,13 @@
 <?php
 require_once 'functions.php';
 
+$pid = getmypid();
+
+if (!cli_set_process_title(title: 'assegai'))
+{
+  exit("Unable to set process title for PID $pid...\n");
+}
+
 use Assegai\CLI\LIB\Menus\Menu;
 use Assegai\CLI\LIB\Menus\MenuItem;
 use Assegai\CLI\LIB\Menus\MenuOptions;

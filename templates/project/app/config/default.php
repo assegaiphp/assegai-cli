@@ -4,7 +4,7 @@ return [
   'app_name'        => 'NAME',
   'version'         => 'VERSION',
   'description'     => 'DESCRIPTION',
-  'company_name'    => 'YOUR_COMPANY',
+  'company_name'    => 'MY_COMPANY',
   'default_password_hash_algo' => PASSWORD_DEFAULT,
   'databases' => [
     'mysql' => [
@@ -37,6 +37,12 @@ return [
     'DEFAULT_SKIP'  => 0,
   ],
   'authentication' => [
+    'secret' => 'SECRET_KEY',
+    'strategies' => [
+      'local' => Assegai\Lib\Authentication\Strategies\LocalStrategy::class,
+      'jwt'   => Assegai\Lib\Authentication\Strategies\JWTStrategy::class,
+      'oauth' => Assegai\Lib\Authentication\Strategies\OAuthStrategy::class,
+    ],
     'default_strategy' => 'local',
     'jwt' => [
       'audience'                => 'https://yourdomain.com',
