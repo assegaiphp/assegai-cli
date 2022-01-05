@@ -87,7 +87,8 @@ if ($dependancyInstallationResult === false)
 
 $oldWorkingDirectory = $workingDirectory;
 $workingDirectory = $projectPath;
-$configPath = "$projectPath/app/config/default.php";
+$configPathRelative = 'app/config/default.php';
+$configPath = "$projectPath/$configPathRelative";
 
 # Setup config
 $configContent = file_get_contents($configPath);
@@ -132,7 +133,7 @@ if (confirm(message: 'Would you like to connect to a database?'))
 
   $dbConfig = [];
   $dbName = prompt('What is the database name', defaultValue: 'assegai');
-  $dbConfig['name'] = $dbName;
+  $dbConfig[$dbName]['name'] = $dbName;
 
   if ($databaseType === 'sqlite')
   {
@@ -157,7 +158,23 @@ if (confirm(message: 'Would you like to connect to a database?'))
     }
   }
 
-  print_r($dbConfig);
+  $configArray = include($configPath);
+
+  if (!isset($configArray['databases'][$databaseType]))
+  {
+    $configArray['databases'][$databaseType] = [];
+  }
+
+  $configArray['databases'][$databaseType] = $dbConfig;
+
+  $configUpdateResult = updateArrayFile(filename: $configPath, replacement: $configArray);
+
+  if ($configUpdateResult === false)
+  {
+    Logger::error(message: "Failed to update $configPathRelative", exit: true);
+  }
+
+  Logger::logUpdate(path: $configPathRelative, filesize: $configUpdateResult);
 }
 
 printf(
