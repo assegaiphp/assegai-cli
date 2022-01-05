@@ -550,3 +550,34 @@ function getoptions(string $shortOptions, array $longOptions, int &$restIndex, i
 
   return $options;
 }
+
+function updateArrayFile(string $filename, array $replacement): int|false
+{
+  $bytes = 0;
+
+  if (!file_exists($filename))
+  {
+    return false;
+  }
+  
+  $fileContent = file_get_contents(filename: $filename);
+
+  $fileArray = include($filename);
+
+  if (!is_array($fileArray))
+  {
+    return false;
+  }
+  
+  $fileArray = array_replace($fileArray, $replacement);
+  $fileArrayFormatted = str_replace('array (', '[', var_export($fileArray, true));
+  $fileArrayFormatted = str_replace(')', ']', $fileArrayFormatted);
+  $fileArrayFormatted = preg_replace('/=>[\s]*\n[\s]*\[/', '=> [', $fileArrayFormatted);
+  $fileContentReturnPos = strpos($fileContent, 'return');
+  $fileContentPrefix = substr($fileContent, 0, $fileContentReturnPos);
+  $data = $fileContentPrefix . "return " . $fileArrayFormatted . ";\n";
+
+  $bytes = file_put_contents(filename: $filename, data: $data);
+
+  return is_bool($bytes) ? false : $bytes;
+}
