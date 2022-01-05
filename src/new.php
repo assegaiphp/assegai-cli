@@ -132,7 +132,7 @@ if (confirm(message: 'Would you like to connect to a database?'))
   };
 
   $dbConfig = [];
-  $dbName = prompt('What is the database name', defaultValue: 'assegai');
+  $dbName = prompt('What is the database name', defaultValue: $safeName);
   $dbConfig[$dbName]['name'] = $dbName;
 
   if ($databaseType === 'sqlite')
@@ -143,7 +143,7 @@ if (confirm(message: 'Would you like to connect to a database?'))
   {
     $dbConfig[$dbName]['host'] = prompt('Host', defaultValue: 'localhost');
     $dbConfig[$dbName]['user'] = prompt('User', defaultValue: 'root');
-    $dbConfig[$dbName]['password'] = prompt('Password');
+    $dbConfig[$dbName]['password'] = promptPassword();
     
     $defaultPort = match($databaseType) {
       'mysql' => 3306,
