@@ -4,6 +4,8 @@
 namespace Assegai\CLI\LIB;
 
 use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\Menus\Menu;
+use Assegai\CLI\LIB\Menus\MenuItem;
 
 final class WorkspaceManager
 {
@@ -58,7 +60,14 @@ final class WorkspaceManager
 
     if (!$project_type)
     {
-      $project_type = prompt(message: 'Project Type', defaultValue: 'application');
+      $projectTypeMenu = new Menu(
+        title: '',
+        items: [
+          new MenuItem(value: 'application'),
+          new MenuItem(value: 'library'),
+        ]
+      );
+      $project_type = $projectTypeMenu->prompt(message: 'Project Type', useKeypad: true);
     }
 
     $filepath = $path ?? exec('pwd');
