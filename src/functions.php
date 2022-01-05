@@ -84,6 +84,20 @@ function prompt(string $message = 'Enter choice', ?string $defaultValue = null, 
   return $line;
 }
 
+function promptPassword(string $message = 'Password', ?int $attempts = null): string
+{
+  # Turn echo off
+  `/bin/stty -echo`;
+
+  $line = prompt(message: $message, attempts: $attempts);
+
+  # Turn echo no
+  `/bin/stty echo`;
+  echo "\n";
+
+  return $line;
+}
+
 function confirm(string $message, bool $defaultYes = true): bool
 {
   $suffix = $defaultYes ? 'Y/n' : 'y/N';
