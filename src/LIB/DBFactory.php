@@ -73,7 +73,19 @@ final class DBFactory
       };
     }
 
-    return DBFactory::$connections[$type][$name];
+    if (!isset(DBFactory::$connections[$type][$name]))
+    {
+      Logger::error(message: 'Connection error.', exit: true);
+    }
+
+    $connection = DBFactory::$connections[$type][$name];
+    
+    if (is_null($connection))
+    {
+      Logger::error(message: 'Connection error. Make sure your database server is running.', exit: true);
+    }
+
+    return $connection;
   }
 
   public static function getMariaDBConnection(array $config): PDO
@@ -100,7 +112,19 @@ final class DBFactory
       }
     }
 
-    return DBFactory::$connections[$type][$name];
+    if (!isset(DBFactory::$connections[$type][$name]))
+    {
+      Logger::error(message: 'Connection error.', exit: true);
+    }
+
+    $connection = DBFactory::$connections[$type][$name];
+    
+    if (is_null($connection))
+    {
+      Logger::error(message: 'Connection error. Make sure your database server is running.', exit: true);
+    }
+
+    return $connection;
   }
 
   public static function getPostgreSQLConnection(array $config): PDO
@@ -127,7 +151,19 @@ final class DBFactory
       }
     }
 
-    return DBFactory::$connections[$type][$name];
+    if (!isset(DBFactory::$connections[$type][$name]))
+    {
+      Logger::error(message: 'Connection error.', exit: true);
+    }
+
+    $connection = DBFactory::$connections[$type][$name];
+    
+    if (is_null($connection))
+    {
+      Logger::error(message: 'Connection error. Make sure your database server is running.', exit: true);
+    }
+
+    return $connection;
   }
 
   public static function getSQLiteConnection(array $config): PDO
@@ -150,7 +186,19 @@ final class DBFactory
       }
     }
 
-    return DBFactory::$connections[$type][$name];
+    if (!isset(DBFactory::$connections[$type][$name]))
+    {
+      Logger::error(message: 'Connection error.', exit: true);
+    }
+
+    $connection = DBFactory::$connections[$type][$name];
+    
+    if (is_null($connection))
+    {
+      Logger::error(message: 'Connection error. Make sure your database server is running.', exit: true);
+    }
+
+    return $connection;
   }
 
   public static function getMongoDbConnection(array $config): PDO
@@ -178,6 +226,18 @@ final class DBFactory
       }
     }
 
-    return DBFactory::$connections[$type][$name];
+    if (!isset(DBFactory::$connections[$type][$name]))
+    {
+      Logger::error(message: 'Connection error.', exit: true);
+    }
+
+    $connection = DBFactory::$connections[$type][$name];
+    
+    if (is_null($connection))
+    {
+      Logger::error(message: 'Connection error. Make sure your database server is running.', exit: true);
+    }
+
+    return $connection;
   }
 }
