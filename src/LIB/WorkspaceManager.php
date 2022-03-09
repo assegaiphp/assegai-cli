@@ -67,7 +67,7 @@ final class WorkspaceManager
           new MenuItem(value: 'library'),
         ]
       );
-      $project_type = $projectTypeMenu->prompt(message: 'Project Type', useKeypad: true);
+      $project_type = $projectTypeMenu->prompt(message: 'Project Type', useKeypad: true)->value();
     }
 
     $filepath = $path ?? exec('pwd');
