@@ -55,7 +55,7 @@ final class WorkspaceManager
 
     if (!$version)
     {
-      $version = prompt(message: 'Version', defaultValue: '0.0.0');
+      $version = prompt(message: 'Version', defaultValue: '0.0.1');
     }
 
     if (!$project_type)
@@ -67,7 +67,7 @@ final class WorkspaceManager
           new MenuItem(value: 'library'),
         ]
       );
-      $project_type = $projectTypeMenu->prompt(message: 'Project Type', useKeypad: true);
+      $project_type = $projectTypeMenu->prompt(message: 'Project Type', useKeypad: true)->value();
     }
 
     $filepath = $path ?? exec('pwd');

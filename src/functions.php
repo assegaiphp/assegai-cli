@@ -594,3 +594,15 @@ function updateArrayFile(string $filename, array $replacement): int|false
 
   return is_bool($bytes) ? false : $bytes;
 }
+
+/**
+ * Returns a sanitized string representation of the given database name.
+ * 
+ * @param string $databaseName The name of the database.
+ * 
+ * @return string Returns a sanitized string representation of the given database name.
+ */
+function getSanitizedDBName(string $databaseName): string
+{
+  return preg_replace('/[!@#$%^&*()-=\+ ]+/', '_', filter_var($databaseName, FILTER_SANITIZE_ENCODED));
+}
