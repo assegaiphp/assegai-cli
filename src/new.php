@@ -132,7 +132,8 @@ if (confirm(message: 'Would you like to connect to a database?'))
   };
 
   $dbConfig = [];
-  $dbName = prompt('What is the database name', defaultValue: $safeName);
+  $dbName = prompt('What is the database name', defaultValue: getSanitizedDBName($safeName));
+  $dbName = getSanitizedDBName(databaseName: $dbName);
   $dbConfig[$dbName]['name'] = $dbName;
 
   if ($databaseType === 'sqlite')
