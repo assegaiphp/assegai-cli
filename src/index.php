@@ -4,7 +4,10 @@
 use Assegai\CLI\LIB\Logging\Logger;
 
 require_once 'bootstrap.php';
-require_once $assegaiPath . '/vendor/autoload.php';
+if (file_exists($assegaiPath . '/vendor/autoload.php'))
+{
+  require_once $assegaiPath . '/vendor/autoload.php';
+}
 
 list($command, $requiredArg, $optionalArg, $option) = match (count($args)) {
   0       => [null,     null,     null,     null],
