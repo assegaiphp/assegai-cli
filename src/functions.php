@@ -320,8 +320,7 @@ function printHeader(): void
 function getVersion(): string
 {
   global $workingDirectory, $assegaiPath;
-
-  $version = exec("cd $assegaiPath && git describe && cd $workingDirectory") . "\n";
+  $version = exec("cd $assegaiPath && composer show assegaiphp/assegai | grep versions && cd $workingDirectory") . "\n";
   return $version;
 }
 
@@ -594,4 +593,16 @@ function updateArrayFile(string $filename, array $replacement): int|false
   $bytes = file_put_contents(filename: $filename, data: $data);
 
   return is_bool($bytes) ? false : $bytes;
+}
+
+/**
+ * Returns a sanitized string representation of the given database name.
+ * 
+ * @param string $databaseName The name of the database.
+ * 
+ * @return string Returns a sanitized string representation of the given database name.
+ */
+function getSanitizedDBName(string $databaseName): string
+{
+  return preg_replace('/[!@#$%^&*()-=\+ ]+/', '_', filter_var($databaseName, FILTER_SANITIZE_ENCODED));
 }

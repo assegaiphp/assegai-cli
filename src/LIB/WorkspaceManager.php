@@ -55,7 +55,7 @@ final class WorkspaceManager
 
     if (!$version)
     {
-      $version = prompt(message: 'Version', defaultValue: '0.0.0');
+      $version = prompt(message: 'Version', defaultValue: '0.0.1');
     }
 
     if (!$project_type)
