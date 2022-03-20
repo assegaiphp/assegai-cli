@@ -29,6 +29,8 @@ if (empty($projectName))
 }
 
 $projectPath = "$workingDirectory/$projectName";
+$projectResourcesPathRel = "/app/src/Resources";
+$projectResourcesPath = "$projectPath{$projectResourcesPathRel}";
 $composerPath = "$projectPath/composer.json";
 
 if (!file_exists($projectPath))
@@ -135,6 +137,14 @@ if (confirm(message: 'Would you like to connect to a database?'))
   $dbName = prompt('What is the database name', defaultValue: getSanitizedDBName($safeName));
   $dbName = getSanitizedDBName(databaseName: $dbName);
   $dbConfig[$dbName]['name'] = $dbName;
+
+  // TODO: #40 refactor(templates): update default database name
+  $valuesFilename = $projectResourcesPath . '/Values.php';
+  $valuesContent = str_replace('%DB_NAME%', $dbName, file_get_contents($valuesFilename));
+  if (file_put_contents($valuesFilename, $valuesContent) === false)
+  {
+    Logger::error(message: "Failed to update $projectResourcesPathRel", exit: true);
+  }
 
   if ($databaseType === 'sqlite')
   {
