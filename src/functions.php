@@ -320,7 +320,7 @@ function printHeader(): void
 function getVersion(): string
 {
   global $workingDirectory, $assegaiPath;
-  $version = exec("cd $assegaiPath && composer show assegaiphp/assegai | grep versions && cd $workingDirectory") . "\n";
+  $version = exec("cd $assegaiPath && composer show assegaiphp/assegai-cli | grep versions && cd $workingDirectory") . "\n";
   return $version;
 }
 
