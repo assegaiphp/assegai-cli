@@ -9,7 +9,9 @@ use Assegai\Database\Attributes\Entity;
 use Assegai\Database\BaseEntity;
 use Assegai\Database\Queries\SQLDataTypes;
 
-#[Entity(tableName: 'users')]
+use AssegaiPHP\Resources\Values;
+
+#[Entity(tableName: 'users', database: Values::DEFAULT_DB_NAME)]
 class UserEntity extends BaseEntity
 {
   #[Column(dataType: SQLDataTypes::VARCHAR, lengthOrValues: 60, isUnique: true)]
