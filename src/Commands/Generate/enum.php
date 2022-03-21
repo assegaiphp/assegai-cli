@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 namespace Assegai\CLI\Commands\Generate;
@@ -11,4 +10,4 @@ list($name) = match (count($args)) {
 };
 
 $schematicBuilder = new SchematicBuilder;
-$schematicBuilder->buildClass(path: $name);
+$schematicBuilder->buildEnum(name: $name);
