@@ -3,6 +3,7 @@
 
 namespace Assegai\CLI\LIB\Generation;
 
+use Assegai\CLI\Exceptions\NotImplementedException;
 use Assegai\CLI\LIB\Color;
 use Assegai\CLI\LIB\Logging\Logger;
 use Assegai\CLI\LIB\WorkspaceManager;
@@ -13,14 +14,33 @@ final class SchematicBuilder
     private bool $verbose = false
   ) { }
 
+  /**
+   * Build an application shell
+   * 
+   * @param null|string $name The name of the application.
+   */
   public function buildApplication(?string $name): void
   {
+    // TODO: #48 feat(lib): implement buildApplication()
+    throw new NotImplementedException();
   }
 
-  public function buildClass(?string $name): void
+  /**
+   * Build a class declaration
+   * 
+   * @param null|string $path The path and filename of the the class.
+   */
+  public function buildClass(?string $path): void
   {
+    // TODO: #49 feat(lib): implement buildClass()
+    throw new NotImplementedException();
   }
-  
+
+  /**
+   * Build a controller declaration
+   * 
+   * @param null|string $name The name of the controller.
+   */
   public function buildController(?string $name): void
   {
     if (empty($name))
@@ -91,6 +111,13 @@ final class SchematicBuilder
     }
   }
 
+  /**
+   * Build an entity declaration
+   * 
+   * @param null|string $path The path to the new entity.
+   * @param null|string $featureName The name of the feature to which the entity 
+   * belongs (if it has one).
+   */
   public function buildEntity(?string $path, ?string $featureName = null): void
   {
     if (empty($path))
@@ -98,7 +125,9 @@ final class SchematicBuilder
       $path = prompt('Entity path', attempts: 3);
     }
 
-    if (!empty($featureName))
+    $isPartOfFeature = !empty($featureName);
+
+    if ($isPartOfFeature)
     {
       $path = "$featureName/$path";
     }
@@ -134,8 +163,56 @@ final class SchematicBuilder
     }
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
+
+    if ($isPartOfFeature)
+    {
+      $targetDirectory = dirname($targetFile);
+      $moduleFiles = array_slice(scandir($targetDirectory), 2);
+
+      $repositories = preg_grep("/repository\.php$/i", $moduleFiles);
+
+      foreach ($repositories as $repositoryFilename)
+      {
+        $repositoryPath = $targetDirectory . DIRECTORY_SEPARATOR . $repositoryFilename;
+        $repositoryPathRelative = $this->relativeWorkingDirectoryPath(path: $repositoryPath);
+
+        if (!file_exists($repositoryPath))
+        {
+          Logger::error("Could not filnd $repositoryPath", exit: true);
+        }
+
+        $fileContent = file_get_contents($repositoryPath);
+        $entityName = basename($path, '.php');
+        $fileContent = str_replace("entity: ''", sprintf("entity: %s::class", $entityName), $fileContent);
+
+        $filesize = file_put_contents($repositoryPath, $fileContent);
+
+        if ($filesize === false)
+        {
+          Logger::error("Could not create $repositoryFilename", exit: true);
+        }
+
+        Logger::logUpdate(path: $repositoryPathRelative, filesize: $filesize);
+      }
+    }
   }
 
+  /**
+   * Build an enumeration declaration
+   * 
+   * @param null|string $name The name of the enumeration.
+   */
+  public function buildEnum(?string $name): void
+  {
+    // TODO: #47 feat(lib): implement enum schematic
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Build a feature declaration
+   * 
+   * @param null|string $name The name of the feature.
+   */
   public function buildFeature(?string $name): void
   {
     if (empty($name))
@@ -162,6 +239,11 @@ final class SchematicBuilder
     }
   }
 
+  /**
+   * Build a guard declaration
+   * 
+   * @param null|string $name The name of the guard.
+   */
   public function buildGuard(?string $path, ?string $featureName = null): void
   {
     if (empty($path))
@@ -224,6 +306,11 @@ final class SchematicBuilder
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
   }
 
+  /**
+   * Build a module declaration
+   * 
+   * @param null|string $name The name of the module.
+   */
   public function buildModule(?string $name): void
   {
     if (empty($name))
@@ -293,6 +380,11 @@ final class SchematicBuilder
     }
   }
 
+  /**
+   * Build a repository declaration
+   * 
+   * @param null|string $name The name of the repository.
+   */
   public function buildRepository(?string $name): void
   {
     if (empty($name))
@@ -363,6 +455,11 @@ final class SchematicBuilder
     }
   }
 
+  /**
+   * Build a service declaration
+   * 
+   * @param null|string $name The name of the service.
+   */
   public function buildService(?string $name): void
   {
     if (empty($name))
@@ -432,24 +529,44 @@ final class SchematicBuilder
     }
   }
 
+  /**
+   * Outputs the schematic templates directory path.
+   * 
+   * @return string Returns the schematic templates directory path.
+   */
   public function templateDirectory(): string
   {
     global $assegaiPath;
     return sprintf("%s/templates/schematics", $assegaiPath);
   }
 
+  /**
+   * Outputs the project modules directory path.
+   * 
+   * @return string Returns the project modules directory path.
+   */
   public function modulesDirectory(): string
   {
     global $workingDirectory;
     return sprintf("%s/app/src/Modules", $workingDirectory);
   }
 
+  /**
+   * Outputs the current working directory absolute path.
+   * 
+   * @return string Returns the current working directory absolute path.
+   */
   public function getWorkingDirectory(): string
   {
     global $workingDirectory;
     return $workingDirectory;
   }
 
+  /**
+   * Outputs the current working directory relative path.
+   * 
+   * @return string Returns the current working directory relative path.
+   */
   public function relativeWorkingDirectoryPath(string $path): string
   {
     global $workingDirectory;
