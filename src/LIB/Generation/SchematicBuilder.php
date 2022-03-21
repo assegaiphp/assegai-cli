@@ -183,7 +183,7 @@ final class SchematicBuilder
 
         $fileContent = file_get_contents($repositoryPath);
         $entityName = basename($path, '.php');
-        $fileContent = str_replace("entity: ''", sprintf("entity: %s::class", $entityName), $fileContent);
+        $fileContent = str_replace("entity: ''", sprintf("entity: %sEntity::class", $entityName), $fileContent);
 
         $filesize = file_put_contents($repositoryPath, $fileContent);
 
