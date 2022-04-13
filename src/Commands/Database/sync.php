@@ -52,6 +52,8 @@ $moduleNames = array_slice($moduleNames, 2);
 use Assegai\Database\Schema;
 use Assegai\Database\SchemaOptions;
 
+$dropSchema = in_array('--drop-schema', $args);
+
 foreach($moduleNames as $moduleName)
 {
   $featureDir = sprintf("%s/%s", $modulesDir, $moduleName);
@@ -71,7 +73,7 @@ foreach($moduleNames as $moduleName)
         $dbName = readLine(message: sprintf("%s? %s%s", Color::GREEN, Color::RESET, 'Database name'));
       }
       
-      if (Schema::create(entityClass: $entityName, options: new SchemaOptions(dbName: $dbName)))
+      if (Schema::create(entityClass: $entityName, options: new SchemaOptions(dbName: $dbName, dropSchema: $dropSchema)))
       {
         Logger::logCreate(path: $entityName);
       }
