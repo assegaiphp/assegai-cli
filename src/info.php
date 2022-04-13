@@ -12,7 +12,8 @@ $systemInfo = [
 ];
 
 $assegaiCLI = [
-  'Assegai CLI Version' => getVersion()
+  'Assegai CLI Version' => getVersion(),
+  'Assegai Version' => getFrameworkVersion(),
 ];
 
 // $assegaiPlatformInfo = [];

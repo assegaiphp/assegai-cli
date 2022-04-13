@@ -324,6 +324,12 @@ function getVersion(): string
   return $version;
 }
 
+function getFrameworkVersion(): string
+{
+  $version = exec("composer show assegaiphp/assegai | grep versions") . "\n";
+  return $version;
+}
+
 function printVersion(): void
 {
   echo getVersion();
