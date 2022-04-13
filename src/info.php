@@ -29,7 +29,7 @@ foreach ($systemInfo as $key => $value)
 printf("\n%s[Assegai CLI]%s\n", Color::GREEN, Color::RESET);
 foreach ($assegaiCLI as $key => $value)
 {
-  printf("%-25s: %s%s%s\n", $key, Color::LIGHT_BLUE, $value, Color::RESET);
+  printf("%-25s: %s%s%s\n", $key, Color::LIGHT_BLUE, trim($value), Color::RESET);
 }
 
 // printf("%s[Assegai Platform Information]%s\n", Color::LIGHT_GREEN, Color::RESET);
