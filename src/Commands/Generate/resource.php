@@ -11,4 +11,4 @@ list($name) = match (count($args)) {
 };
 
 $schematicBuilder = new SchematicBuilder;
-$schematicBuilder->buildFeature(name: $name);
+$schematicBuilder->buildResource(name: $name);
