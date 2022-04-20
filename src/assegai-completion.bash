@@ -25,7 +25,7 @@ _assegai_completion()
 
     g|generate)
     case "$prev" in    
-      application|class|controller|entity|feature|guard|module|repository|service)
+      application|class|controller|entity|guard|module|repository|resource|service)
       return
       ;;
 
@@ -67,7 +67,7 @@ _assegai_completion()
     if [[ "$prev_prev" == "migration" ]] ; then
       COMPREPLY=($(compgen -W "$database_types" -- $cur))
     else
-      COMPREPLY=($(compgen -W "application class controller entity feature guard module repository service" -- "$cur"))
+      COMPREPLY=($(compgen -W "application class controller entity guard module repository resource service" -- "$cur"))
     fi
     ;;
 
