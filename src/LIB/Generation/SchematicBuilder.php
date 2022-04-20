@@ -213,7 +213,7 @@ final class SchematicBuilder
    * 
    * @param null|string $name The name of the feature.
    */
-  public function buildFeature(?string $name): void
+  public function buildResource(?string $name): void
   {
     if (empty($name))
     {

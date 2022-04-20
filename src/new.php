@@ -108,7 +108,7 @@ if (!file_exists("$projectPath/app/src/Modules/Users"))
   if ($userServiceName)
   {
     $schematicBuilder = new SchematicBuilder();
-    $schematicBuilder->buildFeature(name: $userServiceName);
+    $schematicBuilder->buildResource(name: $userServiceName);
   }
 }
 

@@ -16,7 +16,7 @@ $commandsMenu = new Menu(
     new MenuItem(value: 'controller', alias: 'co', description: 'Generate a controller declaration.'),
     new MenuItem(value: 'entity', description: 'Generate an entity declaration.'),
     new MenuItem(value: 'enum', description: 'Generate an enumeration declaration.'),
-    new MenuItem(value: 'feature', alias: 'f', description: 'Generate a new CRUD resource.'),
+    new MenuItem(value: 'resource', alias: 'f', description: 'Generate a new CRUD resource.'),
     new MenuItem(value: 'guard', alias: 'gu', description: 'Generate a guard declaration.'),
     new MenuItem(value: 'module', alias: 'mo', description: 'Generate a module declaration.'),
     new MenuItem(value: 'repository', alias: 'r', description: 'Generate a repository declaration.'),
@@ -51,7 +51,7 @@ else
   $command = match ($command) {
     'co'  => 'controller',
     'cl'  => 'class',
-    'f'   => 'feature',
+    'res' => 'resource',
     'gu'  => 'guard',
     'mo'  => 'module',
     'r'   => 'repository',
