@@ -30,10 +30,7 @@ class AuthenticationController extends BaseController
   public function __construct(
     protected Request $request,
     protected AuthenticationService $authenticationService
-  )
-  {
-    parent::__construct(request: $request);
-  }
+  ) { }
 
   #[Get]
   public function findAll(): Response
