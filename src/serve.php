@@ -39,7 +39,7 @@ if (
 
 $routerFilename = "assegai-router.php";
 
-$router = file_exists("$workingDirector/$routerFilename") ? " $routerFilename" : "";
+$router = file_exists("$workingDirectory/$routerFilename") ? " $routerFilename" : "";
 
 $command = "php -S $host:${port}${router}";
 
