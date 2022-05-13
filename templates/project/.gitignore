@@ -13,3 +13,5 @@ storage/videos/*
 /vendor/
 /docs/
 composer-installer
+
+assegai-router.php
