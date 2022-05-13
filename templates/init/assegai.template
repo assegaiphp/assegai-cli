@@ -12,7 +12,8 @@
   "development": {
     "server": {
       "host": "localhost",
-      "port": 5000
+      "port": 5000,
+      "router": "assegai-router.php"
     }
   }
 }
