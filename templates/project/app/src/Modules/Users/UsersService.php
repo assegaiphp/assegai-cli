@@ -8,12 +8,10 @@ use Assegai\Database\Interfaces\IEntity;
 use Assegai\Core\Result;
 
 #[Injectable]
-class UsersService extends BaseCrudService
+class UsersService
 {
-  public function __construct()
-  {
-    parent::__construct(repository: new UsersRepository);
-  }
+  public function __construct(private UsersRepository $repository)
+  { }
 
   public function create(IEntity $entity): Result
   {
