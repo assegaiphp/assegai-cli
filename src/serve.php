@@ -14,6 +14,7 @@ list($path) = match(count($args)) {
 $config = Config::get(path: $path);
 $host = 'localhost';
 $port = '3000';
+$routerPath = "assegai-router.php";
 
 if (empty($config))
 {
@@ -35,11 +36,14 @@ if (
   {
     $port = $server->port;
   }
+
+  if (isset($server->router))
+  {
+    $routerPath = $server->router;
+  }
 }
 
-$routerFilename = "assegai-router.php";
-
-$router = file_exists("$workingDirectory/$routerFilename") ? " $routerFilename" : "";
+$router = file_exists("$workingDirectory/$routerPath") ? " $routerPath" : "";
 
 $command = "php -S $host:${port}${router}";
 
