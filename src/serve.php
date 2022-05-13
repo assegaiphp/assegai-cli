@@ -37,7 +37,11 @@ if (
   }
 }
 
-$command = "php -S $host:$port";
+$routerFilename = "assegai-router.php";
+
+$router = file_exists("$workingDirector/$routerFilename") ? " $routerFilename" : "";
+
+$command = "php -S $host:${port}${router}";
 
 Logger::log(message: sprintf("Starting Server...\n%sListening on port %s\n", Color::YELLOW, $port));
 $response = exec($command);
