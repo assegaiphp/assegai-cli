@@ -20,6 +20,7 @@
   "require": {
     "php": ">=8.1",
     "ignasbernotas/phkey": "^0.1.1",
-    "plejus/pluralize": "^1.0"
+    "plejus/pluralize": "^1.0",
+    "vlucas/phpdotenv": "^5.4"
   }
 }
