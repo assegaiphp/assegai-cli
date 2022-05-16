@@ -6,6 +6,7 @@ namespace Assegai\CLI\LIB\Generation;
 use Assegai\CLI\Exceptions\NotImplementedException;
 use Assegai\CLI\LIB\Color;
 use Assegai\CLI\LIB\Logging\Logger;
+use Assegai\CLI\LIB\StringManipulator;
 use Assegai\CLI\LIB\WorkspaceManager;
 
 final class SchematicBuilder
@@ -50,9 +51,9 @@ final class SchematicBuilder
 
     $templatePath = $this->templateDirectory() . "/Controller.Template.php";
     $modulesDirectory = $this->modulesDirectory();
-    $featureDirectory = "$modulesDirectory/$name";
-    $featureDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $featureDirectory);
-    $targetFile = "$featureDirectory/${name}Controller.php";
+    $resourceDirectory = "$modulesDirectory/$name";
+    $resourceDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $resourceDirectory);
+    $targetFile = "$resourceDirectory/${name}Controller.php";
     $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
 
     if (!file_exists($templatePath))
@@ -73,16 +74,16 @@ final class SchematicBuilder
       }
     }
 
-    if (!file_exists($featureDirectory))
+    if (!file_exists($resourceDirectory))
     {
-      if (!mkdir(directory: $featureDirectory, recursive: true))
+      if (!mkdir(directory: $resourceDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
+        Logger::error("Could not create " . $resourceDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
       {
-        Logger::logCreate($featureDirectoryRelative);
+        Logger::logCreate($resourceDirectoryRelative);
       }
     }
 
@@ -103,7 +104,7 @@ final class SchematicBuilder
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
 
-    $modulePath = $featureDirectory . "/${name}Module.php";
+    $modulePath = $resourceDirectory . "/${name}Module.php";
 
     if (file_exists($modulePath))
     {
@@ -115,26 +116,26 @@ final class SchematicBuilder
    * Build an entity declaration
    * 
    * @param null|string $path The path to the new entity.
-   * @param null|string $featureName The name of the feature to which the entity 
+   * @param null|string $resourceName The name of the resource to which the entity 
    * belongs (if it has one).
    */
-  public function buildEntity(?string $path, ?string $featureName = null): void
+  public function buildEntity(?string $path, ?string $resourceName = null): void
   {
     if (empty($path))
     {
       $path = prompt('Entity path', attempts: 3);
     }
 
-    $isPartOfFeature = !empty($featureName);
+    $isPartOfResourceModule = !empty($resourceName);
 
-    if ($isPartOfFeature)
+    if ($isPartOfResourceModule)
     {
-      $path = "$featureName/$path";
+      $path = "$resourceName/Entities/$path";
     }
 
-    $defaultTableName = !empty($featureName) ? null : pascalToSnake(basename($path));
+    $defaultTableName = !empty($resourceName) ? null : pascalToSnake(basename($path));
 
-    $tableName = $featureName ?? prompt('Which database table does the entity represent', defaultValue: $defaultTableName);
+    $tableName = $resourceName ?? prompt('Which database table does the entity represent', defaultValue: $defaultTableName);
 
     $templatePath = $this->templateDirectory() . "/Entity.Template.php";
     $modulesDirectory = $this->modulesDirectory();
@@ -164,7 +165,7 @@ final class SchematicBuilder
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
 
-    if ($isPartOfFeature)
+    if ($isPartOfResourceModule)
     {
       $targetDirectory = dirname($targetFile);
       $moduleFiles = array_slice(scandir($targetDirectory), 2);
@@ -209,15 +210,15 @@ final class SchematicBuilder
   }
 
   /**
-   * Build a feature declaration
+   * Build a resource declaration
    * 
-   * @param null|string $name The name of the feature.
+   * @param null|string $name The name of the resource.
    */
   public function buildResource(?string $name): void
   {
     if (empty($name))
     {
-      $name = prompt(sprintf("What's the name of the feature", Color::LIGHT_GREEN, Color::RESET), attempts: 3);
+      $name = prompt(sprintf("What's the name of the resource", Color::LIGHT_GREEN, Color::RESET), attempts: 3);
     }
     $this->buildModule(name: $name);
     
@@ -226,17 +227,15 @@ final class SchematicBuilder
     $this->buildService(name: $name);
     
     echo "\n";
-    if (confirm(message: "Would you like to generate a repository"))
-    {
-      $this->buildRepository(name: $name);
-    }
-    
+    // Generate an entity class to represent the resource data shape
+
     echo "\n";
-    if (confirm(message: "Would you like to generate an entity"))
-    {
-      $entityName = prompt(message: 'What would you like to call the Entity', attempts: 3);
-      $this->buildEntity(path: $entityName, featureName: $name);
-    }
+    $entityName = StringManipulator::getSingularForm(word: $name);
+    $entityName = ucfirst($entityName);
+    $this->buildEntity(path: $entityName, resourceName: $name);
+
+    // Generate Data Transfer Objects (or inputs for GraphQL applications) to define how the data will be sent over the network
+
   }
 
   /**
@@ -244,16 +243,16 @@ final class SchematicBuilder
    * 
    * @param null|string $name The name of the guard.
    */
-  public function buildGuard(?string $path, ?string $featureName = null): void
+  public function buildGuard(?string $path, ?string $resourceName = null): void
   {
     if (empty($path))
     {
       $path = prompt('Guard path', attempts: 3);
     }
 
-    if (!empty($featureName))
+    if (!empty($resourceName))
     {
-      $path = "$featureName/$path";
+      $path = "$resourceName/$path";
     }
 
     $guardName = basename(path: $path);
@@ -320,9 +319,9 @@ final class SchematicBuilder
 
     $templatePath = $this->templateDirectory() . "/Module.Template.php";
     $modulesDirectory = $this->modulesDirectory();
-    $featureDirectory = "$modulesDirectory/$name";
-    $featureDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $featureDirectory);
-    $targetFile = "$featureDirectory/${name}Module.php";
+    $resourceDirectory = "$modulesDirectory/$name";
+    $resourceDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $resourceDirectory);
+    $targetFile = "$resourceDirectory/${name}Module.php";
     $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
 
     if (!file_exists($templatePath))
@@ -343,16 +342,16 @@ final class SchematicBuilder
       }
     }
 
-    if (!file_exists($featureDirectory))
+    if (!file_exists($resourceDirectory))
     {
-      if (!mkdir(directory: $featureDirectory, recursive: true))
+      if (!mkdir(directory: $resourceDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
+        Logger::error("Could not create " . $resourceDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
       {
-        Logger::logCreate($featureDirectoryRelative);
+        Logger::logCreate($resourceDirectoryRelative);
       }
     }
 
@@ -372,7 +371,7 @@ final class SchematicBuilder
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
 
-    $modulePath = $featureDirectory . "/${name}Module.php";
+    $modulePath = $resourceDirectory . "/${name}Module.php";
 
     if (file_exists($modulePath))
     {
@@ -394,9 +393,9 @@ final class SchematicBuilder
 
     $templatePath = $this->templateDirectory() . "/Repository.Template.php";
     $modulesDirectory = $this->modulesDirectory();
-    $featureDirectory = "$modulesDirectory/$name";
-    $featureDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $featureDirectory);
-    $targetFile = "$featureDirectory/${name}Repository.php";
+    $resourceDirectory = "$modulesDirectory/$name";
+    $resourceDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $resourceDirectory);
+    $targetFile = "$resourceDirectory/${name}Repository.php";
     $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
 
     if (!file_exists($templatePath))
@@ -417,16 +416,16 @@ final class SchematicBuilder
       }
     }
 
-    if (!file_exists($featureDirectory))
+    if (!file_exists($resourceDirectory))
     {
-      if (!mkdir(directory: $featureDirectory, recursive: true))
+      if (!mkdir(directory: $resourceDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
+        Logger::error("Could not create " . $resourceDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
       {
-        Logger::logCreate($featureDirectoryRelative);
+        Logger::logCreate($resourceDirectoryRelative);
       }
     }
 
@@ -447,7 +446,7 @@ final class SchematicBuilder
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
 
-    $modulePath = $featureDirectory . "/${name}Module.php";
+    $modulePath = $resourceDirectory . "/${name}Module.php";
 
     if (file_exists($modulePath))
     {
@@ -469,9 +468,9 @@ final class SchematicBuilder
 
     $templatePath = $this->templateDirectory() . "/Service.Template.php";
     $modulesDirectory = $this->modulesDirectory();
-    $featureDirectory = "$modulesDirectory/$name";
-    $featureDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $featureDirectory);
-    $targetFile = "$featureDirectory/${name}Service.php";
+    $resourceDirectory = "$modulesDirectory/$name";
+    $resourceDirectoryRelative = $this->relativeWorkingDirectoryPath(path: $resourceDirectory);
+    $targetFile = "$resourceDirectory/${name}Service.php";
     $targetFileRelative = $this->relativeWorkingDirectoryPath(path: $targetFile);
 
     if (!file_exists($templatePath))
@@ -492,16 +491,16 @@ final class SchematicBuilder
       }
     }
 
-    if (!file_exists($featureDirectory))
+    if (!file_exists($resourceDirectory))
     {
-      if (!mkdir(directory: $featureDirectory, recursive: true))
+      if (!mkdir(directory: $resourceDirectory, recursive: true))
       {
-        Logger::error("Could not create " . $featureDirectoryRelative, exit: true);
+        Logger::error("Could not create " . $resourceDirectoryRelative, exit: true);
       }
 
       if ($this->verbose)
       {
-        Logger::logCreate($featureDirectoryRelative);
+        Logger::logCreate($resourceDirectoryRelative);
       }
     }
 
@@ -521,7 +520,7 @@ final class SchematicBuilder
 
     Logger::logCreate(path: $targetFileRelative, filesize: $filesize);
 
-    $modulePath = $featureDirectory . "/${name}Module.php";
+    $modulePath = $resourceDirectory . "/${name}Module.php";
 
     if (file_exists($modulePath))
     {
