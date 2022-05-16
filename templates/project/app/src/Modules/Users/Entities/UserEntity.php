@@ -1,6 +1,6 @@
 <?php
 
-namespace AssegaiPHP\Modules\Users;
+namespace AssegaiPHP\Modules\Users\Entities;
 
 use Assegai\Database\Attributes\Columns\Column;
 use Assegai\Database\Attributes\Columns\EmailColumn;
